@@ -20,6 +20,7 @@ const Login = () => {
     setTimeout(() => {
       setLoading(false);
       if (form.email === 'demo@ajtracker.com' && form.password === 'password') {
+        localStorage.setItem('aj_logged_in', 'true'); // Set login state
         navigate('/'); // Redirect to home page
       } else {
         setError('Invalid email or password.');
