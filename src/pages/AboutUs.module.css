@@ -1,0 +1,119 @@
+.container {
+  @apply min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16 px-2;
+}
+
+.centerText {
+  @apply text-center mb-16;
+}
+
+.title {
+  @apply text-5xl font-bold mb-6 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+}
+
+.subtitle {
+  @apply text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed;
+}
+
+.grid2 {
+  @apply grid md:grid-cols-2 gap-8 mb-16;
+}
+
+.blockBlue {
+  @apply space-y-6 bg-gradient-to-br from-blue-200 to-blue-400 dark:from-blue-900 dark:to-blue-700 rounded-2xl shadow-lg p-8;
+}
+
+.blockPink {
+  @apply space-y-6 bg-gradient-to-br from-pink-200 to-purple-300 dark:from-purple-900 dark:to-pink-900 rounded-2xl shadow-lg p-8;
+}
+
+.teamSection {
+  @apply bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 dark:from-blue-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl p-8 mb-16 shadow-xl;
+}
+
+.teamGrid {
+  @apply grid md:grid-cols-2 gap-8 max-w-2xl mx-auto;
+}
+
+.teamCard {
+  @apply text-center bg-white dark:bg-gray-800 rounded-xl shadow-md p-6;
+}
+
+.teamAvatarBlue {
+  @apply w-32 h-32 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg;
+}
+
+.teamAvatarPurple {
+  @apply w-32 h-32 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg;
+}
+
+.avatarInner {
+  @apply w-28 h-28 bg-white rounded-full flex items-center justify-center;
+}
+
+.teamRole {
+  @apply text-xl font-semibold mb-2 text-gray-800 dark:text-white;
+}
+
+.teamDesc {
+  @apply text-gray-600 dark:text-gray-300 text-sm mb-3;
+}
+
+.teamQuote {
+  @apply text-xs text-gray-500 dark:text-gray-400;
+}
+
+.teamNote {
+  @apply text-center mt-8 text-gray-600 dark:text-gray-300 italic;
+}
+
+.featuresSection {
+  @apply mb-16;
+}
+
+.featuresTitle {
+  @apply text-3xl font-semibold text-center mb-8 text-gray-800 dark:text-white;
+}
+
+.featuresGrid {
+  @apply grid md:grid-cols-2 lg:grid-cols-3 gap-6;
+}
+
+.featureCard {
+  @apply bg-gradient-to-br from-blue-100 to-blue-300 dark:from-blue-800 dark:to-blue-900 p-6 rounded-xl shadow-md;
+}
+
+.featureIcon {
+  @apply text-2xl mb-3;
+}
+
+.featureTitle {
+  @apply text-lg font-semibold mb-2 text-gray-800 dark:text-white;
+}
+
+.featureDesc {
+  @apply text-gray-600 dark:text-gray-300 text-sm;
+}
+
+.ctaSection {
+  @apply text-center bg-gradient-to-r from-blue-200 via-pink-200 to-purple-200 dark:from-blue-900 dark:via-pink-900 dark:to-purple-900 rounded-2xl shadow-lg py-12 px-6;
+}
+
+.ctaTitle {
+  @apply text-3xl font-semibold mb-6 text-gray-800 dark:text-white;
+}
+
+.ctaDesc {
+  @apply text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl mx-auto;
+}
+
+.ctaBtnGroup {
+  @apply flex flex-col sm:flex-row gap-4 justify-center;
+}
+
+.ctaBtnPrimary {
+  @apply bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg;
+}
+
+.ctaBtnSecondary {
+  @apply border-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900 transition-all duration-300;
+} 

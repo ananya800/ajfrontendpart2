@@ -1,0 +1,51 @@
+.container {
+  @apply min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900;
+}
+
+.navbar {
+  /* No extra styles, just for structure */
+}
+
+.categoryBar {
+  /* CategoryFilter is already styled, but you can add more here if needed */
+}
+
+.heroWrapper {
+  @apply max-w-5xl mx-auto px-4 pt-10 pb-8;
+}
+
+.hero {
+  @apply rounded-3xl bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 dark:from-blue-900 dark:via-purple-900 dark:to-pink-900 shadow-2xl p-10 text-center flex flex-col items-center;
+}
+
+.heroIcon {
+  @apply text-6xl mb-4;
+}
+
+.heroTitle {
+  @apply text-4xl sm:text-5xl font-extrabold mb-4 text-white drop-shadow-lg;
+}
+
+.heroDesc {
+  @apply text-lg sm:text-xl text-white/90 mb-6 max-w-2xl mx-auto;
+}
+
+.heroBtn {
+  @apply bg-yellow-400 hover:bg-yellow-500 text-lg font-bold px-8 py-3 rounded-full shadow-lg transition-all duration-300;
+}
+
+.mainContent {
+  @apply max-w-6xl mx-auto px-4 py-8;
+}
+
+.categoryBlock {
+  @apply rounded-2xl shadow-xl p-6 bg-white dark:bg-gray-900;
+}
+
+.section {
+  @apply mt-20 mb-10 rounded-3xl shadow-2xl p-1;
+}
+
+.sectionInner {
+  @apply rounded-2xl bg-white dark:bg-gray-900 p-4 md:p-8;
+} 

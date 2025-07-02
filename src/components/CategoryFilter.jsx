@@ -1,15 +1,22 @@
-const categories = ["Mobiles", "Laptops", "Audio"];
+import { Link } from "react-router-dom";
 
-const CategoryFilter = ({ selected, onCategoryChange }) => (
-  <div className="flex space-x-4 my-4 px-6">
+const categories = [
+  { name: "Mobiles", icon: "📱" },
+  { name: "Laptops", icon: "💻" },
+  { name: "Audio", icon: "🎧" },
+];
+
+const CategoryFilter = () => (
+  <div className="flex bg-blue-100 dark:bg-blue-950 shadow-sm border-b border-blue-200 dark:border-blue-900 overflow-x-auto">
     {categories.map((cat) => (
-      <button
-        key={cat}
-        className={`px-4 py-2 rounded-full font-medium transition shadow-sm border border-gray-200 dark:border-gray-700 ${selected === cat ? 'bg-blue-600 text-white' : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-200 hover:bg-blue-100 dark:hover:bg-blue-900'}`}
-        onClick={() => onCategoryChange(cat)}
+      <Link
+        key={cat.name}
+        to={`/category/${cat.name}`}
+        className="flex items-center px-6 py-1 hover:bg-blue-200 dark:hover:bg-blue-900 transition font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap border-r border-blue-200 dark:border-blue-900 last:border-r-0"
+        style={{ textDecoration: 'none' }}
       >
-        {cat}
-      </button>
+        <span className="text-xl mr-2">{cat.icon}</span> {cat.name}
+      </Link>
     ))}
   </div>
 );

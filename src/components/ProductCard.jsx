@@ -3,8 +3,6 @@ import { motion } from "framer-motion";
 
 const ProductCard = ({ product, onViewDetail, onRemove }) => (
   <motion.div
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
     whileHover={{ scale: 1.04, boxShadow: "0 8px 32px rgba(37,99,235,0.15)" }}
     transition={{ type: "spring", stiffness: 200, damping: 20 }}
     className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 w-56 flex-shrink-0 flex flex-col items-center hover:shadow-lg transition relative"

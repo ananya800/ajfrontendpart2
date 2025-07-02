@@ -1,0 +1,39 @@
+.navbar {
+  @apply flex items-center justify-between px-6 py-4 bg-white dark:bg-gray-900 shadow-md;
+}
+
+.logo {
+  @apply text-2xl font-bold text-blue-600;
+}
+
+.navLinks {
+  @apply flex items-center space-x-4;
+}
+
+.link {
+  @apply hover:text-blue-500 font-medium;
+}
+
+.premiumBtn {
+  @apply font-bold text-white bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded transition shadow;
+}
+
+.accountBtn {
+  @apply ml-4 p-1 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-800 transition flex items-center;
+}
+
+.themeBtn {
+  @apply ml-4 p-2 rounded-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-800 transition;
+}
+
+.accountIcon {
+  @apply h-8 w-8 text-gray-500 dark:text-gray-300;
+}
+
+.dropdown {
+  @apply absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 rounded shadow-lg py-2 z-50;
+}
+
+.logoutBtn {
+  @apply w-full text-left px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600 dark:text-red-400;
+} 

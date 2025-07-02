@@ -46,6 +46,8 @@ const Navbar = () => {
       <div className="text-2xl font-bold text-blue-600">AJtracker</div>
       <div className="flex items-center space-x-4">
         <Link to="/" className="hover:text-blue-500 font-medium">Home</Link>
+        {auth && <Link to="/dashboard" className="hover:text-blue-500 font-medium">Dashboard</Link>}
+        <Link to="/premium" className="font-bold text-white bg-yellow-400 hover:bg-yellow-500 px-4 py-2 rounded transition shadow">Premium</Link>
         {!auth && <Link to="/login" className="hover:text-blue-500 font-medium">Login</Link>}
         {!auth && <Link to="/signup" className="hover:text-blue-500 font-medium">Signup</Link>}
         <button

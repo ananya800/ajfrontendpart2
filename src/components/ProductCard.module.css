@@ -1,0 +1,19 @@
+.card {
+  @apply bg-white dark:bg-gray-900 rounded-xl shadow-md p-4 flex flex-col items-center transition hover:shadow-lg;
+}
+
+.image {
+  @apply w-32 h-32 object-cover rounded-lg mb-4;
+}
+
+.title {
+  @apply text-lg font-semibold mb-2 text-gray-800 dark:text-white text-center;
+}
+
+.price {
+  @apply text-blue-600 dark:text-blue-400 font-bold text-xl mb-2;
+}
+
+.button {
+  @apply mt-4 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-medium transition;
+} 
