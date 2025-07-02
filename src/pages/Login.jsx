@@ -1,31 +1,37 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import axios from "axios";
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-    // Mock login logic
-    setTimeout(() => {
-      setLoading(false);
-      if (form.email === 'demo@ajtracker.com' && form.password === 'password') {
-        localStorage.setItem('aj_logged_in', 'true'); // Set login state
-        navigate('/'); // Redirect to home page
-      } else {
-        setError('Invalid email or password.');
-      }
-    }, 1200);
+
+    try {
+      const res = await axios.post("http://localhost:3008/login", {
+        email,
+        password,
+      });
+
+      console.log("Login success:", res.data);
+      // handle auth token, redirect, etc.
+    } catch (err) {
+      console.error("Login error:", err.response?.data || err.message);
+      // show error message to user
+    }
+  };
   };
 
   // Animation variants
@@ -56,7 +62,7 @@ const Login = () => {
               type="email"
               name="email"
               value={form.email}
-              onChange={handleChange}
+              onChange={(e)=> setEmail(e.target.value)}
               className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
               placeholder="Enter your email"
               required
@@ -69,7 +75,7 @@ const Login = () => {
               type="password"
               name="password"
               value={form.password}
-              onChange={handleChange}
+              onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
               placeholder="Enter your password"
               required
