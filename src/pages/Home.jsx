@@ -39,17 +39,17 @@ const Home = () => {
         </div>
       </div>
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <SearchBar value={search} onSearch={setSearch} />
+      <SearchBar value={search} onSearch={setSearch} />
         <div className="space-y-12 mt-8">
-          {categories.map(cat => (
+      {categories.map(cat => (
             <div
               key={cat}
               className="rounded-2xl shadow-xl p-6 bg-white dark:bg-gray-900"
             >
-              <ProductRow
-                title={cat}
-                products={filtered.filter(p => p.category === cat)}
-              />
+        <ProductRow
+          title={cat}
+          products={filtered.filter(p => p.category === cat)}
+        />
             </div>
           ))}
         </div>
