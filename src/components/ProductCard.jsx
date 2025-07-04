@@ -16,12 +16,12 @@ const ProductCard = ({ product, onViewDetail, onRemove }) => (
         <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
       </button>
     )}
-    <img src={product.image} alt={product.name} className="w-28 h-28 object-cover rounded mb-2" />
-    <div className="font-semibold text-lg text-center mb-1 text-gray-900 dark:text-gray-100">{product.name}</div>
-    <div className="text-blue-600 font-bold text-xl mb-2">₹{product.price}</div>
+    <img src={product.product_image} alt={product.product_name} className="w-28 h-28 object-cover rounded mb-2" />
+    <div className="font-semibold text-lg text-center mb-1 text-gray-900 dark:text-gray-100 truncate w-full px-2">{product.product_name}</div>
+    <div className="text-blue-600 font-bold text-xl mb-2">₹{product.product_price}</div>
     {/* Mini price trend (optional) */}
     <div className="text-xs text-gray-500 mb-2">{product.history && product.history.length > 1 ? `↓ ₹${product.history[product.history.length-2] - product.price}` : ''}</div>
-    <Link to={`/product/${product.id}`} className="mt-auto px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">View Details</Link>
+    <Link to={`/product/${product.product_id}`} className="mt-auto px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm">View Details</Link>
   </motion.div>
 );
 

@@ -8,8 +8,6 @@ const Login = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -18,23 +16,32 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
 
     try {
       const res = await axios.post("http://localhost:3008/login", {
-        email,
-        password,
-      });
+        email: form.email,
+        password: form.password,
+      }, { withCredentials: true });
 
       console.log("Login success:", res.data);
-      // handle auth token, redirect, etc.
+
+      // Save user login info under 'user' key in localStorage
+      localStorage.setItem("user", JSON.stringify({
+        isLoggedIn: true,
+        details: res.data.user
+      }));
+
+      navigate("/dashboard");
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);
-      // show error message to user
+      setError("Invalid email or password");
+    } finally {
+      setLoading(false);
     }
   };
-  };
 
-  // Animation variants
   const cardVariants = {
     hidden: { opacity: 0, y: 40, scale: 0.98 },
     visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, type: 'spring', bounce: 0.25 } },
@@ -42,16 +49,15 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 via-pink-300 to-purple-400 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4" style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 via-pink-300 to-purple-400 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
       <motion.div
         className="relative w-full max-w-md p-8 rounded-3xl shadow-2xl border border-white/30 dark:border-gray-700 bg-white/40 dark:bg-gray-800/60 backdrop-blur-lg"
         variants={cardVariants}
         initial="hidden"
         animate="visible"
         exit="exit"
-        style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}
       >
-        <h2 className="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 bg-clip-text text-transparent tracking-tight" style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}>
+        <h2 className="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 bg-clip-text text-transparent tracking-tight">
           Login
         </h2>
         {error && <motion.div className="mb-4 text-red-600 text-sm text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{error}</motion.div>}
@@ -62,11 +68,10 @@ const Login = () => {
               type="email"
               name="email"
               value={form.email}
-              onChange={(e)=> setEmail(e.target.value)}
+              onChange={handleChange}
               className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
               placeholder="Enter your email"
               required
-              style={{ fontFamily: 'Poppins, Montserrat, sans-serif' }}
             />
           </div>
           <div>
@@ -75,11 +80,10 @@ const Login = () => {
               type="password"
               name="password"
               value={form.password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={handleChange}
               className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
               placeholder="Enter your password"
               required
-              style={{ fontFamily: 'Poppins, Montserrat, sans-serif' }}
             />
           </div>
           <motion.button
@@ -88,7 +92,6 @@ const Login = () => {
             type="submit"
             disabled={loading}
             className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-700 hover:to-pink-600 transition-all text-lg tracking-wide disabled:opacity-60 disabled:cursor-not-allowed"
-            style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}
           >
             {loading ? (
               <span className="flex items-center justify-center">
@@ -108,7 +111,6 @@ const Login = () => {
           <button
             className="text-blue-600 dark:text-pink-400 font-semibold hover:underline focus:outline-none"
             onClick={() => navigate('/signup')}
-            style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}
           >
             Sign Up
           </button>
@@ -118,4 +120,4 @@ const Login = () => {
   );
 };
 
-export default Login; 
+export default Login;
