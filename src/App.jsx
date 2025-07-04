@@ -21,7 +21,7 @@ function App() {
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/product/:id" element={<ProductDetail />} />
+      <Route path="/product/:product_id" element={<ProductDetail />} />
         <Route path="/category/:category" element={<CategoryPage />} />
         <Route path="/return-policy" element={<ReturnPolicy />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />
