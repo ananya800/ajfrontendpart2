@@ -17,7 +17,7 @@ const ProductRowByCategory = ({ category, search }) => {
         setProducts(res.data);
       } catch (err) {
         console.error("Error fetching category:", category, err);
-        setAddError("Failed to load category products.");
+        setAddError("Failed to load category products on home");
       } finally {
         setLoading(false);
       }

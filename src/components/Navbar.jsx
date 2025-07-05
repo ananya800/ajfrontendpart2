@@ -1,6 +1,7 @@
 // Navbar.jsx
 import { Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import axios from "axios";
 
 const Navbar = () => {
   const navigate = useNavigate();
@@ -21,9 +22,10 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
-    
+    const res = axios.get("http://localhost:3008/logout", { withCredentials: true });
+    console.log(res)
     localStorage.removeItem("user");
-    navigate("/logout"); // Optional: or "/login"
+    navigate("/login");
   };
 
   return (

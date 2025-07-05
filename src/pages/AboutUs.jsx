@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 const AboutUs = () => (
   <div className="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16 px-2">
     <div className="text-center mb-16">
@@ -116,13 +117,25 @@ const AboutUs = () => (
       <p className="text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
         Join thousands of smart shoppers who are already saving money with AJtracker. It's free, easy to use, and helps you never miss a great deal again.
       </p>
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+      {/* <div className="flex flex-col sm:flex-row gap-4 justify-center">
         <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
           Start Tracking
         </button>
         <button className="border-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900 transition-all duration-300">
           Learn More
         </button>
+      </div> */}
+      <div className="flex flex-col sm:flex-row gap-4 justify-center">
+        <Link to="/Dashboard">
+        <button className="bg-gradient-to-r from-blue-600 to-purple-600 text-white px-8 py-3 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105 shadow-lg">
+        Start Tracking
+        </button>
+        </Link>
+        <Link to="/about-us">
+        <button className="border-2 border-blue-600 text-blue-600 dark:text-blue-400 dark:border-blue-400 px-8 py-3 rounded-full text-lg font-semibold hover:bg-blue-600 hover:text-white dark:hover:bg-blue-400 dark:hover:text-gray-900 transition-all duration-300">
+          Learn More
+        </button>
+        </Link>
       </div>
     </div>
   </div>

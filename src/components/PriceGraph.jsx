@@ -9,11 +9,11 @@ const PriceGraph = ({ history }) => {
     const chart = new Chart(canvasRef.current, {
       type: "line",
       data: {
-        labels: history.map((_, i) => `T${i + 1}`),
+        labels: history.map(entry => entry.date),
         datasets: [
           {
             label: "Price",
-            data: history,
+            data: history.map(entry => entry.product_price),
             borderColor: "#2563eb",
             backgroundColor: "rgba(37,99,235,0.1)",
             tension: 0.4,

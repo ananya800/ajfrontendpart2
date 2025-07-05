@@ -56,7 +56,7 @@ const ProductDetail = () => {
             <div className="font-semibold mb-1 text-gray-800 dark:text-gray-200">Price Timeline</div>
             <div className="flex flex-wrap gap-2 text-sm">
               {(product.priceHistory || []).map((price, i) => (
-                <span key={i} className="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">₹{price}</span>
+                <span key={i} className="bg-gray-200 dark:bg-gray-700 px-3 py-1 rounded-full">₹{price.product_price}</span>
               ))}
             </div>
           </div>

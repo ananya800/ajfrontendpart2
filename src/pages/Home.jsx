@@ -7,7 +7,7 @@ import ProductRowByCategory from "../components/ProductRowByCategory";  // NEW
 import AboutUs from "./AboutUs";
 import ContactUs from "./ContactUs";
 
-const categories = ["Mobiles", "Laptops", "Audio"];
+const categories = ["Mobiles", "Laptops", "Audio","Books","Home","Kitchen","Clothing","Footwear","Camera"];
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
