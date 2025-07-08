@@ -11,7 +11,7 @@ const ProductRowByCategory = ({ category, search }) => {
     const fetchCategoryProducts = async () => {
       setLoading(true);
       try {
-        const res = await axios.get(`http://localhost:3008/category/${category}`, {
+        const res = await axios.get(`http://localhost:3008/category/homecat/${category}`, {
           withCredentials: true,
         });
         setProducts(res.data);
