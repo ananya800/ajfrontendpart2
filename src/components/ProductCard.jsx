@@ -1,10 +1,30 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 
 const ProductCard = ({ product, onViewDetail, onRemove }) => {
   const showPercent =
     product.percentage_change !== undefined &&
     !isNaN(product.percentage_change);
+  const navigate = useNavigate();
+
+  // Calculate price change if available
+  const showPriceChange = 
+    product.priceHistory && 
+    product.priceHistory.length > 1 &&
+    product.product_price !== undefined;
+  
+  let priceChange = 0;
+  if (showPriceChange && product.priceHistory.length >= 2) {
+    const currentPrice = product.product_price;
+    const previousPrice = product.priceHistory[product.priceHistory.length - 2].product_price;
+    priceChange = currentPrice - previousPrice;
+  }
+
+  const handleCardClick = (e) => {
+    // Prevent navigation if clicking the remove button
+    if (e.target.closest("button[title='Remove product']")) return;
+    navigate(`/product/${product.product_id}`);
+  };
 
   return (
     <motion.div
@@ -13,11 +33,12 @@ const ProductCard = ({ product, onViewDetail, onRemove }) => {
         boxShadow: "0 8px 32px rgba(37,99,235,0.15)",
       }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
-      className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 w-56 flex-shrink-0 flex flex-col items-center hover:shadow-lg transition relative"
+      className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 w-72 h-92 flex-shrink-0 flex flex-col items-center hover:shadow-lg transition relative cursor-pointer"
+      onClick={handleCardClick}
     >
       {onRemove && (
         <button
-          onClick={() => onRemove(product)}
+          onClick={(e) => { e.stopPropagation(); onRemove(product); }}
           className="absolute top-2 right-2 text-gray-400 hover:text-red-500 bg-white dark:bg-gray-900 rounded-full p-1 shadow"
           title="Remove product"
         >
@@ -35,6 +56,17 @@ const ProductCard = ({ product, onViewDetail, onRemove }) => {
             />
           </svg>
         </button>
+      )}
+
+      {/* Price change indicator badge */}
+      {priceChange !== 0 && (
+        <div className={`absolute top-2 right-2 font-bold text-sm px-2 py-1 rounded-full shadow-md ${
+          priceChange < 0 
+            ? "bg-green-500 text-white" 
+            : "bg-red-500 text-white"
+        }`}>
+          {priceChange < 0 ? "↓" : "↑"} ₹{Math.abs(priceChange)}
+        </div>
       )}
 
       <img
@@ -69,6 +101,7 @@ const ProductCard = ({ product, onViewDetail, onRemove }) => {
       <Link
         to={`/product/${product.product_id}`}
         className="mt-auto px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm"
+        onClick={e => e.stopPropagation()}
       >
         View Details
       </Link>

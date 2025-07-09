@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import CategoryFilter from "../components/CategoryFilter";
 import SearchBar from "../components/SearchBar";
@@ -11,7 +11,14 @@ const categories = ["Mobiles", "Laptops", "Audio","Books","Home","Kitchen","Clot
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const [search, setSearch] = useState("");
+  const location = useLocation();
+  const params = new URLSearchParams(location.search);
+  const [search, setSearch] = useState(params.get("search") || "");
+
+  useEffect(() => {
+    setSearch(params.get("search") || "");
+  }, [location.search]);
+
   const navigate = useNavigate();
 
   return (
@@ -41,7 +48,7 @@ const Home = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        <SearchBar value={search} onSearch={setSearch} />
+        {/* Remove SearchBar from here, since it's now in Navbar */}
 
         <div className="space-y-12 mt-8">
           {categories.map((cat) => (
@@ -52,18 +59,6 @@ const Home = () => {
               <ProductRowByCategory category={cat} search={search} />
             </div>
           ))}
-        </div>
-
-        {/* About & Contact */}
-        <div className="mt-20 mb-10 bg-gradient-to-r ... p-1">
-          <div className="rounded-2xl bg-white dark:bg-gray-900 p-4 md:p-8">
-            <AboutUs />
-          </div>
-        </div>
-        <div className="mt-20 mb-10 bg-gradient-to-r ... p-1">
-          <div className="rounded-2xl bg-white dark:bg-gray-900 p-4 md:p-8">
-            <ContactUs />
-          </div>
         </div>
       </div>
     </div>

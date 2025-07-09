@@ -33,7 +33,7 @@ const Login = () => {
         details: res.data.user
       }));
 
-      navigate("/dashboard");
+      navigate("/");
     } catch (err) {
       console.error("Login error:", err.response?.data || err.message);
       setError("Invalid email or password");
@@ -49,7 +49,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 via-pink-300 to-purple-400 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
       <motion.div
         className="relative w-full max-w-md p-8 rounded-3xl shadow-2xl border border-white/30 dark:border-gray-700 bg-white/40 dark:bg-gray-800/60 backdrop-blur-lg"
         variants={cardVariants}
@@ -85,6 +85,9 @@ const Login = () => {
               placeholder="Enter your password"
               required
             />
+            <div className="mt-2 text-right">
+              <a href="#" className="text-blue-600 dark:text-pink-400 text-sm hover:underline font-semibold">Forgot password?</a>
+            </div>
           </div>
           <motion.button
             whileHover={{ scale: 1.04 }}

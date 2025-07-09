@@ -1,313 +1,166 @@
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 const Signup = () => {
-  const [step, setStep] = useState(1);
   const [form, setForm] = useState({
-    firstName: '',
-    lastName: '',
+    name: '',
     email: '',
-    emailOtp: '',
+    password: '',
     phone: '',
-    phoneOtp: '',
   });
-  const [emailOtpSent, setEmailOtpSent] = useState(false);
-  const [emailOtpVerified, setEmailOtpVerified] = useState(false);
-  const [phoneOtpSent, setPhoneOtpSent] = useState(false);
-  const [phoneOtpVerified, setPhoneOtpVerified] = useState(false);
-  const [mockEmailOtp, setMockEmailOtp] = useState('');
-  const [mockPhoneOtp, setMockPhoneOtp] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
-  // Mock OTP generator
-  const generateOtp = () => Math.floor(100000 + Math.random() * 900000).toString();
-
-  // Handlers
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
     setError('');
   };
 
-  // Step 1: Name
-  const handleNextFromName = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.firstName.trim() || !form.lastName.trim()) {
-      setError('Please enter your first and last name.');
+    if (!form.name || !form.email || !form.password || !form.phone) {
+      setError('Please fill in all fields.');
       return;
     }
-    setStep(2);
-  };
-
-  // Step 2: Email OTP
-  const handleSendEmailOtp = (e) => {
-    e.preventDefault();
-    if (!form.email.match(/^[^@\s]+@[^@\s]+\.[^@\s]+$/)) {
-      setError('Please enter a valid email address.');
-      return;
-    }
-    const otp = generateOtp();
-    setMockEmailOtp(otp);
-    setEmailOtpSent(true);
-    setError('');
-    alert(`Mock OTP sent to email: ${otp}`); // For demo
-  };
-
-  const handleVerifyEmailOtp = (e) => {
-    e.preventDefault();
-    if (form.emailOtp === mockEmailOtp) {
-      setEmailOtpVerified(true);
-      setError('');
-      setStep(3);
-    } else {
-      setError('Incorrect OTP. Please try again.');
+    try {
+      const res = await axios.post('http://localhost:3008/signup', {
+        name: form.name,
+        email: form.email,
+        password: form.password,
+        phone_number: form.phone,
+      });
+      if (res.data.message === 'SUCCESS') {
+        showSuccessToast();
+        // Redirect to login after a short delay
+        setTimeout(() => navigate('/login'), 2000);
+      } else {
+        setError(res.data.message || 'Signup failed.');
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || 'Server error');
     }
   };
 
-  // Step 3: Phone OTP
-  const handleSendPhoneOtp = (e) => {
-    e.preventDefault();
-    if (!form.phone.match(/^\d{10}$/)) {
-      setError('Please enter a valid 10-digit phone number.');
-      return;
-    }
-    const otp = generateOtp();
-    setMockPhoneOtp(otp);
-    setPhoneOtpSent(true);
-    setError('');
-    alert(`Mock OTP sent to phone: ${otp}`); // For demo
-  };
-
-  const handleVerifyPhoneOtp = (e) => {
-    e.preventDefault();
-    if (form.phoneOtp === mockPhoneOtp) {
-      setPhoneOtpVerified(true);
-      setError('');
+  const showSuccessToast = () => {
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'fixed top-4 right-4 bg-green-500 text-white px-4 py-3 rounded-lg shadow-lg z-50 flex items-center animate-fade-in';
+    
+    // Add checkmark icon
+    const checkIcon = document.createElement('span');
+    checkIcon.innerHTML = '✅';
+    checkIcon.className = 'mr-2 text-xl';
+    toast.appendChild(checkIcon);
+    
+    // Add message
+    const message = document.createElement('span');
+    message.textContent = 'Signup successful! You\'re ready to track prices.';
+    message.className = 'font-medium';
+    toast.appendChild(message);
+    
+    // Add to DOM
+    document.body.appendChild(toast);
+    
+    // Remove after 5 seconds
+    setTimeout(() => {
+      toast.classList.add('animate-fade-out');
       setTimeout(() => {
-        navigate('/login');
-      }, 1200);
-    } else {
-      setError('Incorrect OTP. Please try again.');
-    }
-  };
-
-  // Animation variants
-  const cardVariants = {
-    hidden: { opacity: 0, y: 40, scale: 0.98 },
-    visible: { opacity: 1, y: 0, scale: 1, transition: { duration: 0.6, type: 'spring', bounce: 0.25 } },
-    exit: { opacity: 0, y: -40, scale: 0.98, transition: { duration: 0.4 } },
-  };
-  const stepVariants = {
-    hidden: { opacity: 0, x: 40 },
-    visible: { opacity: 1, x: 0, transition: { duration: 0.5 } },
-    exit: { opacity: 0, x: -40, transition: { duration: 0.3 } },
+        if (document.body.contains(toast)) {
+          document.body.removeChild(toast);
+        }
+      }, 500);
+    }, 5000);
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-400 via-pink-300 to-purple-400 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4" style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}>
-      <motion.div
-        className="relative w-full max-w-md p-8 rounded-3xl shadow-2xl border border-white/30 dark:border-gray-700 bg-white/40 dark:bg-gray-800/60 backdrop-blur-lg"
-        variants={cardVariants}
-        initial="hidden"
-        animate="visible"
-        exit="exit"
-        style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}
-      >
-        <h2 className="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 bg-clip-text text-transparent tracking-tight" style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-pink-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 px-4">
+      <div className="w-full max-w-md p-8 rounded-3xl shadow-2xl border border-white/30 dark:border-gray-700 bg-white/40 dark:bg-gray-800/60 backdrop-blur-lg">
+        <h2 className="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-blue-700 via-purple-600 to-pink-500 bg-clip-text text-transparent tracking-tight">
           Sign Up
         </h2>
-        <div className="flex justify-center mb-8 gap-2">
-          {[1,2,3].map((s) => (
-            <motion.div
-              key={s}
-              className={`w-8 h-2 rounded-full transition-all duration-300 ${step === s ? 'bg-gradient-to-r from-blue-600 to-pink-500 shadow-lg' : 'bg-white/40 dark:bg-gray-700'}`}
-              layout
+        {error && <div className="mb-4 text-red-600 text-sm text-center">{error}</div>}
+        <form className="space-y-6" onSubmit={handleSubmit}>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Name</label>
+            <input
+              type="text"
+              name="name"
+              value={form.name}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
+              placeholder="Enter your name"
+              required
             />
-          ))}
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Email</label>
+            <input
+              type="email"
+              name="email"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
+              placeholder="Enter your email"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Password</label>
+            <input
+              type="password"
+              name="password"
+              value={form.password}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
+              placeholder="Enter your password"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Phone Number</label>
+            <input
+              type="tel"
+              name="phone"
+              value={form.phone}
+              onChange={handleChange}
+              className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
+              placeholder="Enter your phone number"
+              required
+            />
+          </div>
+          <button
+            type="submit"
+            className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-700 hover:to-pink-600 transition-all text-lg tracking-wide"
+          >
+            Sign Up
+          </button>
+        </form>
+        <div className="mt-6 text-center text-sm text-gray-700 dark:text-gray-300">
+          Already have an account?{' '}
+          <Link to="/login" className="text-blue-600 hover:underline font-semibold">Login</Link>
         </div>
-        {error && <motion.div className="mb-4 text-red-600 text-sm text-center" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>{error}</motion.div>}
-        <AnimatePresence mode="wait">
-          {step === 1 && (
-            <motion.form
-              key="step1"
-              onSubmit={handleNextFromName}
-              className="space-y-6"
-              variants={stepVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">First Name</label>
-                <input
-                  type="text"
-                  name="firstName"
-                  value={form.firstName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
-                  placeholder="Enter your first name"
-                  required
-                  style={{ fontFamily: 'Poppins, Montserrat, sans-serif' }}
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Last Name</label>
-                <input
-                  type="text"
-                  name="lastName"
-                  value={form.lastName}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
-                  placeholder="Enter your last name"
-                  required
-                  style={{ fontFamily: 'Poppins, Montserrat, sans-serif' }}
-                />
-              </div>
-              <motion.button
-                whileHover={{ scale: 1.04 }}
-                whileTap={{ scale: 0.98 }}
-                type="submit"
-                className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-700 hover:to-pink-600 transition-all text-lg tracking-wide"
-                style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}
-              >
-                Next
-              </motion.button>
-            </motion.form>
-          )}
-          {step === 2 && (
-            <motion.form
-              key="step2"
-              onSubmit={emailOtpVerified ? undefined : (emailOtpSent ? handleVerifyEmailOtp : handleSendEmailOtp)}
-              className="space-y-6"
-              variants={stepVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Email Address</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
-                  placeholder="Enter your email"
-                  required
-                  disabled={emailOtpSent}
-                  style={{ fontFamily: 'Poppins, Montserrat, sans-serif' }}
-                />
-              </div>
-              {!emailOtpSent && (
-                <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-700 hover:to-pink-600 transition-all text-lg tracking-wide"
-                  style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}
-                >
-                  Send OTP
-                </motion.button>
-              )}
-              {emailOtpSent && !emailOtpVerified && (
-                <>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Enter OTP</label>
-                    <input
-                      type="text"
-                      name="emailOtp"
-                      value={form.emailOtp}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
-                      placeholder="Enter OTP sent to your email"
-                      required
-                      style={{ fontFamily: 'Poppins, Montserrat, sans-serif' }}
-                    />
-                  </div>
-                  <motion.button
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.98 }}
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-700 hover:to-pink-600 transition-all text-lg tracking-wide"
-                    style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}
-                  >
-                    Verify & Next
-                  </motion.button>
-                </>
-              )}
-            </motion.form>
-          )}
-          {step === 3 && (
-            <motion.form
-              key="step3"
-              onSubmit={phoneOtpVerified ? undefined : (phoneOtpSent ? handleVerifyPhoneOtp : handleSendPhoneOtp)}
-              className="space-y-6"
-              variants={stepVariants}
-              initial="hidden"
-              animate="visible"
-              exit="exit"
-            >
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Phone Number</label>
-                <input
-                  type="tel"
-                  name="phone"
-                  value={form.phone}
-                  onChange={handleChange}
-                  className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
-                  placeholder="Enter your 10-digit phone number"
-                  required
-                  disabled={phoneOtpSent}
-                  style={{ fontFamily: 'Poppins, Montserrat, sans-serif' }}
-                />
-              </div>
-              {!phoneOtpSent && (
-                <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.98 }}
-                  type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-700 hover:to-pink-600 transition-all text-lg tracking-wide"
-                  style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}
-                >
-                  Send OTP
-                </motion.button>
-              )}
-              {phoneOtpSent && !phoneOtpVerified && (
-                <>
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Enter OTP</label>
-                    <input
-                      type="text"
-                      name="phoneOtp"
-                      value={form.phoneOtp}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
-                      placeholder="Enter OTP sent to your phone"
-                      required
-                      style={{ fontFamily: 'Poppins, Montserrat, sans-serif' }}
-                    />
-                  </div>
-                  <motion.button
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.98 }}
-                    type="submit"
-                    className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-700 hover:to-pink-600 transition-all text-lg tracking-wide"
-                    style={{ fontFamily: 'Montserrat, Poppins, sans-serif' }}
-                  >
-                    Verify & Signup
-                  </motion.button>
-                </>
-              )}
-              {phoneOtpVerified && (
-                <motion.div className="text-green-600 text-center font-semibold" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-                  Signup successful! Redirecting to login...
-                </motion.div>
-              )}
-            </motion.form>
-          )}
-        </AnimatePresence>
-      </motion.div>
+      </div>
+      
+      <style jsx>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes fadeOut {
+          from { opacity: 1; }
+          to { opacity: 0; }
+        }
+        
+        .animate-fade-in {
+          animation: fadeIn 0.5s ease-out forwards;
+        }
+        
+        .animate-fade-out {
+          animation: fadeOut 0.5s ease-out forwards;
+        }
+      `}</style>
     </div>
   );
 };
