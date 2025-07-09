@@ -81,57 +81,57 @@ const Signup = () => {
         </h2>
         {error && <div className="mb-4 text-red-600 text-sm text-center">{error}</div>}
         <form className="space-y-6" onSubmit={handleSubmit}>
-          <div>
+              <div>
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Name</label>
-            <input
-              type="text"
+                <input
+                  type="text"
               name="name"
               value={form.name}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
               placeholder="Enter your name"
-              required
-            />
-          </div>
-          <div>
+                  required
+                />
+              </div>
+              <div>
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Email</label>
-            <input
-              type="email"
-              name="email"
-              value={form.email}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-          <div>
+                <input
+                  type="email"
+                  name="email"
+                  value={form.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
+                  placeholder="Enter your email"
+                  required
+                />
+              </div>
+                  <div>
             <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Password</label>
-            <input
+                    <input
               type="password"
               name="password"
               value={form.password}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
+                      onChange={handleChange}
+                      className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
               placeholder="Enter your password"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Phone Number</label>
-            <input
-              type="tel"
-              name="phone"
-              value={form.phone}
-              onChange={handleChange}
-              className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
+                      required
+                    />
+                  </div>
+              <div>
+                <label className="block text-sm font-semibold text-gray-700 dark:text-gray-200 mb-2">Phone Number</label>
+                <input
+                  type="tel"
+                  name="phone"
+                  value={form.phone}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 border border-white/40 dark:border-gray-600 rounded-xl bg-white/60 dark:bg-gray-900/60 focus:ring-2 focus:ring-blue-400 dark:focus:ring-pink-400 focus:border-transparent text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 shadow-sm backdrop-blur"
               placeholder="Enter your phone number"
-              required
-            />
-          </div>
+                  required
+                />
+              </div>
           <button
-            type="submit"
-            className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-700 hover:to-pink-600 transition-all text-lg tracking-wide"
+                  type="submit"
+                  className="w-full bg-gradient-to-r from-blue-600 via-purple-600 to-pink-500 text-white font-bold py-3 rounded-xl shadow-lg hover:from-blue-700 hover:to-pink-600 transition-all text-lg tracking-wide"
           >
             Sign Up
           </button>
@@ -140,7 +140,7 @@ const Signup = () => {
           Already have an account?{' '}
           <Link to="/login" className="text-blue-600 hover:underline font-semibold">Login</Link>
         </div>
-      </div>
+                  </div>
       
       <style jsx>{`
         @keyframes fadeIn {
