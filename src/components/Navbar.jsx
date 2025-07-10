@@ -47,11 +47,11 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4 ml-8">
-            <Link to="/" className="hover:text-blue-500 font-medium">
-              Home
-            </Link>
-            {isLoggedin ? (
-              <>
+          <Link to="/" className="hover:text-blue-500 font-medium">
+            Home
+          </Link>
+          {isLoggedin ? (
+            <>
                 <Link to="/dashboard" className="hover:text-blue-500 font-medium">
                   Dashboard
                 </Link>
@@ -82,26 +82,26 @@ const Navbar = () => {
                       >
                         Admin Panel
                       </Link>
-                      <button
+              <button
                         className="w-full text-left px-4 py-2 text-primary hover:bg-secondary hover:text-white rounded-lg transition"
-                        onClick={handleLogout}
-                      >
-                        Logout
-                      </button>
+                onClick={handleLogout}
+              >
+                Logout
+              </button>
                     </div>
                   )}
                 </div>
-              </>
-            ) : (
-              <>
-                <Link to="/login" className="hover:text-blue-500 font-medium">
-                  Login
-                </Link>
-                <Link to="/signup" className="hover:text-blue-500 font-medium">
-                  Signup
-                </Link>
-              </>
-            )}
+            </>
+          ) : (
+            <>
+              <Link to="/login" className="hover:text-blue-500 font-medium">
+                Login
+              </Link>
+              <Link to="/signup" className="hover:text-blue-500 font-medium">
+                Signup
+              </Link>
+            </>
+          )}
           </div>
         </div>
       </nav>

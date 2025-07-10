@@ -89,7 +89,7 @@ const ProductDetail = () => {
           <div className="text-2xl font-semibold text-gray-900 dark:text-gray-100 leading-tight" style={{ fontFamily: 'Inter, system-ui, sans-serif' }}>{product.product_name}</div>
           
           <div className="flex items-center gap-3">
-            <div className="text-blue-600 font-bold text-2xl">₹{product.product_price}</div>
+          <div className="text-blue-600 font-bold text-2xl">₹{product.product_price}</div>
             {maxPrice > product.product_price && (
               <div className="text-gray-500 line-through text-lg">MRP: ₹{maxPrice}</div>
             )}

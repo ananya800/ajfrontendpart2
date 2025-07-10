@@ -17,8 +17,8 @@ const ProductRow = ({ title, products, onViewDetail, onRemove }) => {
   };
 
   return (
-    <div className="mb-8">
-      <h2 className="text-xl font-bold mb-2 px-6 text-gray-800 dark:text-gray-100">{title}</h2>
+  <div className="mb-8">
+    <h2 className="text-xl font-bold mb-2 px-6 text-gray-800 dark:text-gray-100">{title}</h2>
       <div className="relative">
         <button
           className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-900 shadow rounded-full p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800 transition disabled:opacity-30"
@@ -32,9 +32,9 @@ const ProductRow = ({ title, products, onViewDetail, onRemove }) => {
           ref={rowRef}
           className="flex overflow-x-auto space-x-4 px-6 pb-2 hide-scrollbar scroll-smooth"
         >
-          {products.map(product => (
-            <ProductCard key={product.id} product={product} onViewDetail={onViewDetail} onRemove={onRemove} />
-          ))}
+      {products.map(product => (
+        <ProductCard key={product.id} product={product} onViewDetail={onViewDetail} onRemove={onRemove} />
+      ))}
         </div>
         <button
           className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white dark:bg-gray-900 shadow rounded-full p-2 text-blue-500 hover:bg-blue-100 dark:hover:bg-blue-800 transition disabled:opacity-30"
@@ -44,9 +44,9 @@ const ProductRow = ({ title, products, onViewDetail, onRemove }) => {
         >
           <FiChevronRight className="w-6 h-6" />
         </button>
-      </div>
     </div>
-  );
+  </div>
+);
 };
 
 export default ProductRow; 

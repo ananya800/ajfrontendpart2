@@ -56,13 +56,13 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/product/:product_id" element={<ProductDetail />} />
-      <Route path="/category/:category" element={<CategoryPage />} />
-      <Route path="/return-policy" element={<ReturnPolicy />} />
-      <Route path="/refund-policy" element={<RefundPolicy />} />
-      <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-      <Route path="/disclosure" element={<Disclosure />} />
-      <Route path="/about-us" element={<AboutUs />} />
-      <Route path="/contact-us" element={<ContactUs />} />
+        <Route path="/category/:category" element={<CategoryPage />} />
+        <Route path="/return-policy" element={<ReturnPolicy />} />
+        <Route path="/refund-policy" element={<RefundPolicy />} />
+        <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+        <Route path="/disclosure" element={<Disclosure />} />
+        <Route path="/about-us" element={<AboutUs />} />
+        <Route path="/contact-us" element={<ContactUs />} />
       <Route path="/premium" element={<Premium />} />
       <Route path="/profile" element={<Profile />} />
       
