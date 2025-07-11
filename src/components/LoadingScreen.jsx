@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
 const LoadingScreen = ({ message, duration = 0, onSkip = null }) => {
-  const [showSkip, setShowSkip] = useState(false);
+  // const [showSkip, setShowSkip] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(message || "Tracking best deals for you...");
   const messages = [
     "Tracking best deals for you...",
@@ -11,14 +11,14 @@ const LoadingScreen = ({ message, duration = 0, onSkip = null }) => {
     "Analyzing price trends..."
   ];
 
-  // Show skip button after 3 seconds if loading takes too long
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSkip(true);
-    }, 3000);
+  // // Show skip button after 3 seconds if loading takes too long
+  // useEffect(() => {
+  //   const timer = setTimeout(() => {
+  //     setShowSkip(true);
+  //   }, 3000);
 
-    return () => clearTimeout(timer);
-  }, []);
+  //   return () => clearTimeout(timer);
+  // }, []);
 
   // Cycle through messages
   useEffect(() => {
@@ -134,7 +134,7 @@ const LoadingScreen = ({ message, duration = 0, onSkip = null }) => {
       </div>
       
       {/* Skip button */}
-      {showSkip && onSkip && (
+      {/* {showSkip && onSkip && (
         <motion.button
           onClick={onSkip}
           className="mt-8 px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100"
@@ -144,7 +144,7 @@ const LoadingScreen = ({ message, duration = 0, onSkip = null }) => {
         >
           Skip animation
         </motion.button>
-      )}
+      )} */}
     </div>
   );
 };
