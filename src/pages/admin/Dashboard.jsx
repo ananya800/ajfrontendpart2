@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { io } from "socket.io-client";
+
+const socket = io("http://localhost:3008");
+
 import { 
   HiUsers, 
   HiShoppingBag, 
@@ -41,46 +45,67 @@ const Dashboard = () => {
     premiumUsers: 0,
     trackedProducts: 0,
     activeAlerts: 0,
-    priceDrops: 0
+    priceDrops: 0,
+     priceIncreases: 0
   });
   const [recentActivity, setRecentActivity] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchDashboardData = async () => {
-      setLoading(true);
-      try {
-        // In a real app, you would fetch this data from your backend
-        // For now, we'll use mock data
-        
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        // Mock data
-        setStats({
-          totalUsers: 1248,
-          premiumUsers: 342,
-          trackedProducts: 5689,
-          activeAlerts: 2456,
-          priceDrops: 187
-        });
-        
-        setRecentActivity([
-          { id: 1, type: 'alert', message: 'Price drop alert triggered for iPhone 13', time: '5 minutes ago', user: 'john@example.com' },
-          { id: 2, type: 'user', message: 'New user registered', time: '10 minutes ago', user: 'sarah@example.com' },
-          { id: 3, type: 'product', message: 'New product added to tracking', time: '25 minutes ago', user: 'mike@example.com' },
-          { id: 4, type: 'premium', message: 'User upgraded to premium', time: '1 hour ago', user: 'lisa@example.com' },
-          { id: 5, type: 'alert', message: 'Price drop alert triggered for Samsung TV', time: '2 hours ago', user: 'david@example.com' },
-        ]);
-      } catch (err) {
-        console.error('Error fetching dashboard data:', err);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const fetchDashboardData = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(
+        "http://localhost:3008/admin/admindashboard", 
+        { withCredentials: true })
+      ;
+      const dashboard = response.data
 
-    fetchDashboardData();
-  }, []);
+      setStats({
+        totalUsers: parseInt(dashboard.userdetails.total_users) || 0,
+        premiumUsers: parseInt(dashboard.userdetails.premium_users) || 0,
+        trackedProducts: parseInt(dashboard.productdetails.total_products) || 0,
+        activeAlerts: parseInt(dashboard.userdetails.active_alerts) || 0,
+        priceDrops: parseInt(dashboard.productdetails.negetive_discount) || 0,
+        priceIncreases: parseInt(dashboard.productdetails.positive_discount) || 0
+      });
+    } catch (err) {
+      console.error("Error fetching dashboard data:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchDashboardData();
+
+  const handleUserCounts = (data) => {
+    setStats((prev) => ({
+      ...prev,
+      totalUsers: parseInt(data.total_users) || 0,
+      premiumUsers: parseInt(data.premium_users) || 0
+    }));
+  };
+
+  socket.on("userCounts", handleUserCounts);
+
+  
+  return () => {
+    socket.off("userCounts", handleUserCounts);
+  };
+}, []); 
+      
+
+
+      
+        
+        // setRecentActivity([
+        //   { id: 1, type: 'alert', message: 'Price drop alert triggered for iPhone 13', time: '5 minutes ago', user: 'john@example.com' },
+        //   { id: 2, type: 'user', message: 'New user registered', time: '10 minutes ago', user: 'sarah@example.com' },
+        //   { id: 3, type: 'product', message: 'New product added to tracking', time: '25 minutes ago', user: 'mike@example.com' },
+        //   { id: 4, type: 'premium', message: 'User upgraded to premium', time: '1 hour ago', user: 'lisa@example.com' },
+        //   { id: 5, type: 'alert', message: 'Price drop alert triggered for Samsung TV', time: '2 hours ago', user: 'david@example.com' },
+        // ]);
+   
 
   // Chart data for price changes trend
   const priceChangesData = {
@@ -88,7 +113,7 @@ const Dashboard = () => {
     datasets: [
       {
         label: 'Price Drops',
-        data: [25, 32, 18, 45, 37, 22, 29],
+        data: [stats.priceDrops,25, 32, 18, 45, 37, 22],
         borderColor: 'rgb(99, 102, 241)',
         backgroundColor: 'rgba(99, 102, 241, 0.1)',
         tension: 0.4,
@@ -96,7 +121,7 @@ const Dashboard = () => {
       },
       {
         label: 'Price Increases',
-        data: [15, 22, 28, 18, 27, 32, 19],
+        data: [stats.priceIncreases,15, 22, 28, 18, 27, 32],
         borderColor: 'rgb(236, 72, 153)',
         backgroundColor: 'rgba(236, 72, 153, 0.1)',
         tension: 0.4,
@@ -106,6 +131,7 @@ const Dashboard = () => {
   };
 
   // Chart data for most tracked products
+  
   const mostTrackedData = {
     labels: ['iPhone 13', 'Samsung TV', 'Sony PS5', 'MacBook Pro', 'AirPods Pro'],
     datasets: [
@@ -255,7 +281,7 @@ const Dashboard = () => {
           <div>
             <h3 className="text-lg font-medium">Price Drops Today</h3>
             <p className="text-3xl font-bold mt-2">{stats.priceDrops}</p>
-            <p className="text-sm opacity-80 mt-1">Across {stats.priceDrops > 0 ? Math.round(stats.priceDrops * 1.3) : 0} products</p>
+            <p className="text-sm opacity-80 mt-1">Across {stats.trackedProducts} products</p>
           </div>
           <div className="bg-white/20 p-4 rounded-full">
             <HiTrendingDown className="w-8 h-8" />
@@ -315,4 +341,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard; 
+export default Dashboard;

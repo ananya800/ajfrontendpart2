@@ -29,19 +29,24 @@ const UserManagement = () => {
       try {
         // In a real app, you would fetch this data from your backend
         // For now, we'll use mock data
+        const response = await axios.get(
+          "http://localhost:3008/admin/allusersdetails", 
+          { withCredentials: true }
+        )
+        const users = response.data.userdetails
         
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // // Simulate API delay
+        // await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Mock user data
-        const mockUsers = Array.from({ length: 50 }, (_, i) => ({
+        const mockUsers = users.map((user, i) => ({
           id: i + 1,
-          name: `User ${i + 1}`,
-          email: `user${i + 1}@example.com`,
+          name: user.name,
+          email:  user.email,
           createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)),
-          trackedProducts: Math.floor(Math.random() * 20),
-          tokensLeft: Math.floor(Math.random() * 100),
-          isPremium: Math.random() > 0.7,
+          trackedProducts: user.products_tracking,
+          tokensLeft: 100-user.products_tracking,
+          isPremium: user.role,
           isBanned: Math.random() > 0.9,
           lastLogin: new Date(Date.now() - Math.floor(Math.random() * 1000000000))
         }));
@@ -62,11 +67,14 @@ const UserManagement = () => {
     let result = [...users];
     
     // Filter by user type
-    if (userTypeFilter === 'premium') {
+    if (userTypeFilter === 'premium_user') {
       result = result.filter(user => user.isPremium);
-    } else if (userTypeFilter === 'free') {
+    } else if (userTypeFilter === 'free_user') {
       result = result.filter(user => !user.isPremium);
     } else if (userTypeFilter === 'banned') {
+      result = result.filter(user => user.isBanned);
+    }
+     else if (userTypeFilter === 'admin') {
       result = result.filter(user => user.isBanned);
     }
     
