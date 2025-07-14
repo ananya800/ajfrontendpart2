@@ -6,18 +6,12 @@ import {
   HiShoppingBag,
   HiBell,
   HiCreditCard,
-  HiCog,
-  HiSupport,
-  HiLogout,
   HiMenuAlt2,
-  HiX,
-  HiChevronLeft,
-  HiChevronRight
+  HiX
 } from 'react-icons/hi';
 
 const AdminSidebar = ({ isMobileOpen, toggleMobile }) => {
   const location = useLocation();
-  const [isCollapsed, setIsCollapsed] = useState(false);
 
   const isActive = (path) => {
     return location.pathname.startsWith(path);
@@ -45,19 +39,14 @@ const AdminSidebar = ({ isMobileOpen, toggleMobile }) => {
       icon: <HiBell className="w-6 h-6" />
     },
     {
+      name: 'Analytics',
+      path: '/admin/analytics',
+      icon: <HiChartPie className="w-6 h-6" />
+    },
+    {
       name: 'Premium',
       path: '/admin/premium',
       icon: <HiCreditCard className="w-6 h-6" />
-    },
-    {
-      name: 'Support',
-      path: '/admin/support',
-      icon: <HiSupport className="w-6 h-6" />
-    },
-    {
-      name: 'Settings',
-      path: '/admin/settings',
-      icon: <HiCog className="w-6 h-6" />
     }
   ];
 
@@ -71,10 +60,10 @@ const AdminSidebar = ({ isMobileOpen, toggleMobile }) => {
             isItemActive
               ? 'bg-indigo-100 dark:bg-indigo-900/40 text-indigo-700 dark:text-indigo-300'
               : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300'
-          } ${isCollapsed ? 'justify-center px-2' : ''}`}
+          }`}
         >
           <span className="mr-3">{item.icon}</span>
-          {!isCollapsed && <span>{item.name}</span>}
+          <span>{item.name}</span>
         </Link>
       </div>
     );
@@ -98,39 +87,19 @@ const AdminSidebar = ({ isMobileOpen, toggleMobile }) => {
         {isMobileOpen ? <HiX className="w-6 h-6" /> : <HiMenuAlt2 className="w-6 h-6" />}
       </button>
 
-      {/* Desktop collapse/expand button */}
-      <button
-        className={`hidden lg:block fixed top-4 z-40 transition-all left-64 ${isCollapsed ? 'left-20' : ''}`}
-        onClick={() => setIsCollapsed((v) => !v)}
-        style={{ left: isCollapsed ? '5rem' : '16rem' }}
-      >
-        {isCollapsed ? (
-          <HiChevronRight className="w-6 h-6 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 shadow p-1" />
-        ) : (
-          <HiChevronLeft className="w-6 h-6 bg-white dark:bg-gray-800 rounded-full border border-gray-200 dark:border-gray-700 shadow p-1" />
-        )}
-      </button>
-
       {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 z-30 h-screen transition-all bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 ${
-          isMobileOpen
-            ? 'w-64 translate-x-0'
-            : isCollapsed
-            ? 'w-20 -translate-x-0'
-            : 'w-64 -translate-x-full lg:translate-x-0'
+        className={`fixed top-0 left-0 z-30 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 w-64 transition-transform ${
+          isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
         }`}
-        style={{ width: isCollapsed ? '5rem' : '16rem' }}
       >
         <div className="h-full px-3 py-4 overflow-y-auto flex flex-col">
-          <div className={`flex items-center justify-center mb-8 p-4 ${isCollapsed ? 'justify-center' : ''}`}>
+          <div className="flex items-center justify-center mb-8 p-4">
             <Link to="/admin/dashboard" className="flex items-center space-x-3">
               <img src="/images/logo.png" className="h-8" alt="AJ Tracker Logo" />
-              {!isCollapsed && (
-                <span className="self-center text-xl font-semibold whitespace-nowrap text-gray-900 dark:text-white">
-                  Admin Panel
-                </span>
-              )}
+              <span className="self-center text-xl font-semibold whitespace-nowrap text-gray-900 dark:text-white">
+                Admin Panel
+              </span>
             </Link>
           </div>
 
@@ -138,16 +107,6 @@ const AdminSidebar = ({ isMobileOpen, toggleMobile }) => {
             {navItems.map((item, index) => (
               <NavItem key={index} item={item} />
             ))}
-          </div>
-
-          <div className="pt-4 mt-8 border-t border-gray-200 dark:border-gray-700">
-            <Link
-              to="/admin/logout"
-              className={`flex items-center px-4 py-3 text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg ${isCollapsed ? 'justify-center px-2' : ''}`}
-            >
-              <HiLogout className="w-6 h-6 mr-3" />
-              {!isCollapsed && <span className="font-medium">Logout</span>}
-            </Link>
           </div>
         </div>
       </aside>

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
-import ProductCard from '../components/ProductCard';
+import TrackableProductCard from '../components/TrackableProductCard';
 // import { getMockSearchResults } from '../data/mockSearchResults';
 
 const SearchResults = () => {
@@ -11,30 +11,22 @@ const SearchResults = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [tracked, setTracked] = useState([]); // mock tracked product ids
+
+  // Mock logged in user email
+  const loggedInUserEmail = 'user@example.com';
 
   useEffect(() => {
     const fetchSearchResults = async () => {
       setLoading(true);
       setError('');
-      
       try {
-        // Simulate API delay
-        // await new Promise(resolve => setTimeout(resolve, 1500));
-        
-        // Use mock data instead of API call for testing
-        // const mockResults = getMockSearchResults(productName);
-        // setProducts(mockResults);
-        // Uncomment the below code when you have the actual API endpoint
-      
         const response = await axios.get(`http://localhost:3008/producthome/search/${productName}`,{withCredentials: true});
-        
         if (response.data && Array.isArray(response.data)) {
           setProducts(response.data);
         } else {
           setProducts([]);
         }
-      
-        
       } catch (err) {
         console.error('Search error:', err);
         setError(err.response?.data?.message || 'Failed to search for products. Please try again.');
@@ -43,22 +35,19 @@ const SearchResults = () => {
         setLoading(false);
       }
     };
-
     if (productName) {
       fetchSearchResults();
     }
   }, [productName]);
 
-  const handleProductClick = (product) => {
-    // Navigate to product detail page if needed
-    // For now, we'll just log the product
-    console.log('Product clicked:', product);
+  // Handler for tracking a product
+  const handleTrack = (product) => {
+    setTracked(prev => [...prev, product.id || product.product_id]);
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
       <Navbar />
-      
       <div className="max-w-6xl mx-auto px-4 py-8">
         {/* Search Results Header */}
         <div className="mb-8">
@@ -69,7 +58,6 @@ const SearchResults = () => {
             {loading ? 'Searching...' : `${products.length} products found`}
           </p>
         </div>
-
         {/* Loading State */}
         {loading && (
           <div className="flex items-center justify-center py-12">
@@ -79,7 +67,6 @@ const SearchResults = () => {
             </div>
           </div>
         )}
-
         {/* Error State */}
         {error && !loading && (
           <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-6 mb-8">
@@ -108,7 +95,6 @@ const SearchResults = () => {
             </div>
           </div>
         )}
-
         {/* No Results */}
         {!loading && !error && products.length === 0 && (
           <div className="text-center py-12">
@@ -127,41 +113,24 @@ const SearchResults = () => {
             </button>
           </div>
         )}
-
         {/* Search Results Grid */}
         {!loading && !error && products.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 p-2">
             {products.map((product, index) => (
-              <div
-                key={product.id || index}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
-                onClick={() => handleProductClick(product)}
-              >
-                <div className="aspect-w-1 aspect-h-1 w-full">
-                  <img
-                    src={product.image}
-                    alt={product.title}
-                    className="w-full h-48 object-cover"
-                    
-                  />
-                </div>
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 line-clamp-2">
-                    {product.title}
-                  </h3>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-2xl font-bold text-green-600 dark:text-green-400">
-                      ₹{product.price}
-                    </span>
-                    
-                  </div>
-                 
-                  <div className="mt-2 text-sm text-gray-600 dark:text-gray-300">
-                    
-                  
-                  </div>
-                </div>
-              </div>
+              <TrackableProductCard
+                key={product.id || product.product_id || index}
+                product={{
+                  ...product,
+                  product_image: product.image,
+                  product_name: product.title,
+                  product_price: product.price,
+                  product_url: product.url || product.product_url || '#',
+                  product_id: product.id || product.product_id || index
+                }}
+                isTracked={tracked.includes(product.id || product.product_id)}
+                onTrack={handleTrack}
+                loggedInUserEmail={loggedInUserEmail}
+              />
             ))}
           </div>
         )}

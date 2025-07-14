@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { 
   HiSearch, 
@@ -22,6 +22,8 @@ const UserManagement = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
   const usersPerPage = 10;
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const menuRefs = useRef({});
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -53,6 +55,16 @@ const UserManagement = () => {
     };
     fetchUsers();
   }, []);
+
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (openMenuId !== null && menuRefs.current[openMenuId] && !menuRefs.current[openMenuId].contains(event.target)) {
+        setOpenMenuId(null);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [openMenuId]);
 
   // Apply filters and search
   useEffect(() => {
@@ -207,11 +219,15 @@ const UserManagement = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <div className="relative inline-block text-left">
-                      <div className="group">
-                        <button className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">
-                          <HiDotsVertical className="h-5 w-5" />
-                        </button>
-                        <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 hidden group-hover:block z-10">
+                      <button
+                        className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                        onClick={() => setOpenMenuId(user.id === openMenuId ? null : user.id)}
+                        ref={el => menuRefs.current[user.id] = el}
+                      >
+                        <HiDotsVertical className="h-5 w-5" />
+                      </button>
+                      {openMenuId === user.id && (
+                        <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10">
                           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
                             <button
                               onClick={() => window.location.href = `/admin/users/${user.id}`}
@@ -249,7 +265,7 @@ const UserManagement = () => {
                             </button>
                           </div>
                         </div>
-                      </div>
+                      )}
                     </div>
                   </td>
                 </tr>

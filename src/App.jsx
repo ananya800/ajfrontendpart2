@@ -22,6 +22,10 @@ import { FiSun, FiMoon } from "react-icons/fi";
 import AdminLayout from "./components/admin/AdminLayout";
 import AdminDashboard from "./pages/admin/Dashboard";
 import UserManagement from "./pages/admin/UserManagement";
+import ProductManagement from "./pages/admin/ProductManagement";
+import AlertManagement from "./pages/admin/AlertManagement";
+import Analytics from "./pages/admin/Analytics";
+import PremiumManagement from "./pages/admin/PremiumManagement";
 
 function App() {
   const [theme, setTheme] = useState(() => {
@@ -70,20 +74,13 @@ function App() {
       
       {/* Admin Routes - Bypassing login for now */}
       <Route path="/admin" element={<AdminLayout />}>
-        <Route path="" element={<AdminDashboard />} /> {/* Default route */}
+        <Route path="" element={<AdminDashboard />} />
         <Route path="dashboard" element={<AdminDashboard />} />
         <Route path="users" element={<UserManagement />} />
-        <Route path="users/premium" element={<UserManagement />} />
-        <Route path="users/banned" element={<UserManagement />} />
-        <Route path="products" element={<div>Products Management</div>} />
-        <Route path="products/add" element={<div>Add Product</div>} />
-        <Route path="products/categories" element={<div>Categories Management</div>} />
-        <Route path="alerts" element={<div>Alerts Management</div>} />
-        <Route path="premium" element={<div>Premium Management</div>} />
-        <Route path="support" element={<div>Support Management</div>} />
-        <Route path="settings" element={<div>Settings</div>} />
-        <Route path="settings/admins" element={<div>Admin Users</div>} />
-        <Route path="settings/api-keys" element={<div>API Keys</div>} />
+        <Route path="products" element={<ProductManagement />} />
+        <Route path="alerts" element={<AlertManagement />} />
+        <Route path="premium" element={<PremiumManagement />} />
+        <Route path="analytics" element={<Analytics />} />
       </Route>
     </Routes>
       

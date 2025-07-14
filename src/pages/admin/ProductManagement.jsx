@@ -1,547 +1,346 @@
-import { useState, useEffect } from 'react';
-import { HiPencil, HiTrash, HiPlus, HiSearch, HiFilter, HiRefresh } from 'react-icons/hi';
-import axios from 'axios';
+import { useState, useMemo } from 'react';
+import { HiSearch, HiFilter, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
+
+const mockProducts = [
+  {
+    id: 1,
+    name: 'Apple iPhone 14',
+    image: 'https://m.media-amazon.com/images/I/61cwywLZR-L._AC_UY218_.jpg',
+    url: 'https://www.amazon.in/dp/B0BDK62PDX',
+    site: 'Amazon',
+    price: 69999,
+    lastUpdated: '2024-06-01 10:30',
+    logs: [
+      { time: '2024-06-01 10:30', status: 'Success' },
+      { time: '2024-05-31 09:00', status: 'Fail' },
+    ],
+  },
+  {
+    id: 2,
+    name: 'Samsung Galaxy S23',
+    image: 'https://m.media-amazon.com/images/I/81ZSn2rk9WL._AC_UY218_.jpg',
+    url: 'https://www.flipkart.com/samsung-galaxy-s23',
+    site: 'Flipkart',
+    price: 59999,
+    lastUpdated: '2024-06-01 09:45',
+    logs: [
+      { time: '2024-06-01 09:45', status: 'Success' },
+      { time: '2024-05-30 08:00', status: 'Success' },
+    ],
+  },
+];
+
+const emptyProduct = {
+  id: null,
+  name: '',
+  image: '',
+  url: '',
+  site: '',
+  price: '',
+  lastUpdated: '',
+  logs: [],
+};
 
 const ProductManagement = () => {
-  const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState(mockProducts);
+  const [showModal, setShowModal] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
+  const [form, setForm] = useState(emptyProduct);
+  const [showLogs, setShowLogs] = useState({});
   const [searchTerm, setSearchTerm] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
-  const [productsPerPage] = useState(10);
   const [sortField, setSortField] = useState('name');
   const [sortDirection, setSortDirection] = useState('asc');
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [categories, setCategories] = useState([]);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [currentProduct, setCurrentProduct] = useState(null);
-  const [formData, setFormData] = useState({
-    name: '',
-    description: '',
-    category: '',
-    price: '',
-    image_url: '',
-    stock_status: 'In Stock',
-    featured: false
-  });
+  const [currentPage, setCurrentPage] = useState(1);
+  const productsPerPage = 10;
 
-  // Mock data for now - would be replaced with API calls
-  useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      const mockProducts = Array.from({ length: 50 }, (_, i) => ({
-        id: i + 1,
-        name: `Product ${i + 1}`,
-        description: `Description for product ${i + 1}`,
-        category: ['Shoes', 'Clothing', 'Accessories', 'Electronics'][Math.floor(Math.random() * 4)],
-        price: Math.floor(Math.random() * 300) + 50,
-        image_url: 'https://via.placeholder.com/150',
-        stock_status: Math.random() > 0.2 ? 'In Stock' : 'Out of Stock',
-        featured: Math.random() > 0.8,
-        created_at: new Date(Date.now() - Math.floor(Math.random() * 10000000000)).toISOString()
-      }));
-      
-      setProducts(mockProducts);
-      setCategories(['All', 'Shoes', 'Clothing', 'Accessories', 'Electronics']);
-      setLoading(false);
-    }, 1000);
-  }, []);
-
-  // Handle search
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-    setCurrentPage(1);
-  };
-
-  // Handle sort
-  const handleSort = (field) => {
-    if (sortField === field) {
-      setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
-    } else {
-      setSortField(field);
-      setSortDirection('asc');
-    }
-  };
-
-  // Handle category filter
-  const handleCategoryFilter = (e) => {
-    setSelectedCategory(e.target.value);
-    setCurrentPage(1);
-  };
-
-  // Handle form input changes
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value
+  // Filtering
+  const filteredProducts = useMemo(() => {
+    return products.filter(product => {
+      const matchesSearch =
+        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.site.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesSearch;
     });
-  };
+  }, [products, searchTerm]);
 
-  // Handle form submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    
-    if (currentProduct) {
-      // Update existing product
-      const updatedProducts = products.map(product => 
-        product.id === currentProduct.id ? { ...product, ...formData } : product
-      );
-      setProducts(updatedProducts);
-    } else {
-      // Add new product
-      const newProduct = {
-        ...formData,
-        id: products.length + 1,
-        created_at: new Date().toISOString()
-      };
-      setProducts([...products, newProduct]);
-    }
-    
-    // Close modal and reset form
-    setIsModalOpen(false);
-    setCurrentProduct(null);
-    setFormData({
-      name: '',
-      description: '',
-      category: '',
-      price: '',
-      image_url: '',
-      stock_status: 'In Stock',
-      featured: false
+  // Sorting
+  const sortedProducts = useMemo(() => {
+    return [...filteredProducts].sort((a, b) => {
+      let aValue = a[sortField];
+      let bValue = b[sortField];
+      if (typeof aValue === 'string') aValue = aValue.toLowerCase();
+      if (typeof bValue === 'string') bValue = bValue.toLowerCase();
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
     });
-  };
-
-  // Handle edit product
-  const handleEditProduct = (product) => {
-    setCurrentProduct(product);
-    setFormData({
-      name: product.name,
-      description: product.description,
-      category: product.category,
-      price: product.price,
-      image_url: product.image_url,
-      stock_status: product.stock_status,
-      featured: product.featured
-    });
-    setIsModalOpen(true);
-  };
-
-  // Handle delete product
-  const handleDeleteProduct = (id) => {
-    if (window.confirm('Are you sure you want to delete this product?')) {
-      setProducts(products.filter(product => product.id !== id));
-    }
-  };
-
-  // Filter products based on search term and category
-  const filteredProducts = products.filter(product => {
-    const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                         product.description.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesCategory = selectedCategory === '' || selectedCategory === 'All' || product.category === selectedCategory;
-    return matchesSearch && matchesCategory;
-  });
-
-  // Sort products
-  const sortedProducts = [...filteredProducts].sort((a, b) => {
-    if (a[sortField] < b[sortField]) return sortDirection === 'asc' ? -1 : 1;
-    if (a[sortField] > b[sortField]) return sortDirection === 'asc' ? 1 : -1;
-    return 0;
-  });
+  }, [filteredProducts, sortField, sortDirection]);
 
   // Pagination
-  const indexOfLastProduct = currentPage * productsPerPage;
-  const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
-  const currentProducts = sortedProducts.slice(indexOfFirstProduct, indexOfLastProduct);
   const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
+  const paginatedProducts = sortedProducts.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
+
+  // Open modal for add/edit
+  const openModal = (product = null) => {
+    setEditingProduct(product);
+    setForm(product ? { ...product } : { ...emptyProduct });
+    setShowModal(true);
+  };
+  const closeModal = () => {
+    setShowModal(false);
+    setEditingProduct(null);
+    setForm(emptyProduct);
+  };
+
+  // Handle form change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Save product (add or edit)
+  const handleSave = (e) => {
+    e.preventDefault();
+    // Simple validation
+    if (!form.name || !form.image || !form.url || !form.site || !form.price) return;
+    if (editingProduct) {
+      setProducts((prev) => prev.map((p) => (p.id === editingProduct.id ? { ...form, id: editingProduct.id, logs: editingProduct.logs } : p)));
+    } else {
+      setProducts((prev) => [
+        ...prev,
+        { ...form, id: Date.now(), lastUpdated: new Date().toISOString().slice(0, 16).replace('T', ' '), logs: [] },
+      ]);
+    }
+    closeModal();
+  };
+
+  // Delete product
+  const handleDelete = (id) => {
+    if (window.confirm('Are you sure you want to delete this product?')) {
+      setProducts((prev) => prev.filter((p) => p.id !== id));
+    }
+  };
+
+  // Toggle logs section
+  const toggleLogs = (id) => {
+    setShowLogs((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold text-gray-800 dark:text-white">Product Management</h2>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg flex items-center"
-        >
-          <HiPlus className="mr-2" /> Add Product
-        </button>
-      </div>
-
-      {/* Filters and Search */}
-      <div className="flex flex-col md:flex-row gap-4 mb-6">
-        <div className="flex-1">
+    <div className="p-4">
+      <h2 className="text-2xl font-bold text-gray-800 dark:text-white mb-6">Product Management</h2>
+      <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row gap-2 md:gap-4 items-center">
           <div className="relative">
             <input
               type="text"
-              placeholder="Search products..."
+              placeholder="Search by name or site..."
               value={searchTerm}
-              onChange={handleSearch}
-              className="w-full pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              onChange={e => { setSearchTerm(e.target.value); setCurrentPage(1); }}
+              className="pl-10 pr-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             />
             <HiSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-500" />
           </div>
-        </div>
-        
-        <div className="flex items-center space-x-4">
-          <div className="flex items-center space-x-2">
-            <HiFilter className="text-gray-500 dark:text-gray-400" />
-            <select
-              value={selectedCategory}
-              onChange={handleCategoryFilter}
-              className="rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-            >
-              <option value="">All Categories</option>
-              {categories.map((category, index) => (
-                <option key={index} value={category}>{category}</option>
-              ))}
-            </select>
-          </div>
-          
-          <button 
-            onClick={() => {
-              setSearchTerm('');
-              setSelectedCategory('');
-              setSortField('name');
-              setSortDirection('asc');
-            }}
-            className="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-            title="Reset filters"
+          <button
+            className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold shadow"
+            onClick={() => openModal()}
           >
-            <HiRefresh />
+            Add Product
           </button>
         </div>
       </div>
-
-      {/* Products Table */}
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto bg-white dark:bg-gray-800 rounded-lg shadow border border-gray-200 dark:border-gray-700">
         <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-          <thead className="bg-gray-50 dark:bg-gray-700">
+          <thead className="bg-gray-50 dark:bg-gray-700 sticky top-0 z-10">
             <tr>
-              <th 
-                scope="col" 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('id')}
-              >
-                ID {sortField === 'id' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th 
-                scope="col" 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('name')}
-              >
-                Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th 
-                scope="col" 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('category')}
-              >
-                Category {sortField === 'category' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th 
-                scope="col" 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('price')}
-              >
-                Price {sortField === 'price' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th 
-                scope="col" 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('stock_status')}
-              >
-                Status {sortField === 'stock_status' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th 
-                scope="col" 
-                className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                onClick={() => handleSort('featured')}
-              >
-                Featured {sortField === 'featured' && (sortDirection === 'asc' ? '↑' : '↓')}
-              </th>
-              <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                Actions
-              </th>
+              <th className="px-4 py-3 cursor-pointer" onClick={() => { setSortField('name'); setSortDirection(sortField === 'name' && sortDirection === 'asc' ? 'desc' : 'asc'); }}>Product Name {sortField === 'name' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-4 py-3">Image</th>
+              <th className="px-4 py-3">URL</th>
+              <th className="px-4 py-3 cursor-pointer" onClick={() => { setSortField('site'); setSortDirection(sortField === 'site' && sortDirection === 'asc' ? 'desc' : 'asc'); }}>Site {sortField === 'site' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-4 py-3 cursor-pointer" onClick={() => { setSortField('price'); setSortDirection(sortField === 'price' && sortDirection === 'asc' ? 'desc' : 'asc'); }}>Current Price {sortField === 'price' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-4 py-3 cursor-pointer" onClick={() => { setSortField('lastUpdated'); setSortDirection(sortField === 'lastUpdated' && sortDirection === 'asc' ? 'desc' : 'asc'); }}>Last Updated {sortField === 'lastUpdated' && (sortDirection === 'asc' ? '↑' : '↓')}</th>
+              <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {loading ? (
-              <tr>
-                <td colSpan="7" className="px-6 py-4 text-center">
-                  <div className="flex justify-center">
-                    <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-indigo-500"></div>
-                  </div>
+            {paginatedProducts.map((product) => (
+              <tr key={product.id}>
+                <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{product.name}</td>
+                <td className="px-4 py-3"><img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded" /></td>
+                <td className="px-4 py-3"><a href={product.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">Link</a></td>
+                <td className="px-4 py-3">{product.site}</td>
+                <td className="px-4 py-3 font-bold text-green-700 dark:text-green-400">₹{product.price}</td>
+                <td className="px-4 py-3 text-gray-500 dark:text-gray-300">{product.lastUpdated}</td>
+                <td className="px-4 py-3 text-right space-x-2">
+                  <button
+                    className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded shadow"
+                    onClick={() => openModal(product)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded shadow"
+                    onClick={() => handleDelete(product.id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
-            ) : currentProducts.length === 0 ? (
-              <tr>
-                <td colSpan="7" className="px-6 py-4 text-center text-gray-500 dark:text-gray-400">
-                  No products found
-                </td>
-              </tr>
-            ) : (
-              currentProducts.map((product) => (
-                <tr key={product.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {product.id}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    {product.name}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {product.category}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
-                    ${product.price}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                      product.stock_status === 'In Stock' 
-                        ? 'bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100' 
-                        : 'bg-red-100 text-red-800 dark:bg-red-800 dark:text-red-100'
-                    }`}>
-                      {product.stock_status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {product.featured ? 'Yes' : 'No'}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button 
-                      onClick={() => handleEditProduct(product)}
-                      className="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300 mr-4"
-                    >
-                      <HiPencil className="w-5 h-5" />
-                    </button>
-                    <button 
-                      onClick={() => handleDeleteProduct(product.id)}
-                      className="text-red-600 hover:text-red-900 dark:text-red-400 dark:hover:text-red-300"
-                    >
-                      <HiTrash className="w-5 h-5" />
-                    </button>
-                  </td>
-                </tr>
-              ))
-            )}
+            ))}
           </tbody>
         </table>
       </div>
-
       {/* Pagination */}
       <div className="flex justify-between items-center mt-6">
         <div className="text-sm text-gray-700 dark:text-gray-300">
-          Showing <span className="font-medium">{indexOfFirstProduct + 1}</span> to{" "}
-          <span className="font-medium">
-            {indexOfLastProduct > filteredProducts.length ? filteredProducts.length : indexOfLastProduct}
-          </span>{" "}
-          of <span className="font-medium">{filteredProducts.length}</span> products
+          Showing <span className="font-medium">{(currentPage - 1) * productsPerPage + 1}</span> to{' '}
+          <span className="font-medium">{Math.min(currentPage * productsPerPage, sortedProducts.length)}</span> of{' '}
+          <span className="font-medium">{sortedProducts.length}</span> products
         </div>
         <div className="flex space-x-2">
           <button
             onClick={() => setCurrentPage(currentPage - 1)}
             disabled={currentPage === 1}
-            className={`px-3 py-1 rounded-md ${
-              currentPage === 1
-                ? "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed"
-                : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
-            }`}
+            className={`px-3 py-1 rounded-md ${currentPage === 1 ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
           >
-            Previous
+            <HiChevronLeft />
           </button>
-          {[...Array(totalPages)].map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrentPage(i + 1)}
-              className={`px-3 py-1 rounded-md ${
-                currentPage === i + 1
-                  ? "bg-indigo-600 text-white"
-                  : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
-              }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+          {[...Array(Math.min(totalPages, 5))].map((_, i) => {
+            let pageNum;
+            if (totalPages <= 5) {
+              pageNum = i + 1;
+            } else if (currentPage <= 3) {
+              pageNum = i + 1;
+            } else if (currentPage >= totalPages - 2) {
+              pageNum = totalPages - 4 + i;
+            } else {
+              pageNum = currentPage - 2 + i;
+            }
+            return (
+              <button
+                key={i}
+                onClick={() => setCurrentPage(pageNum)}
+                className={`px-3 py-1 rounded-md ${currentPage === pageNum ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
+              >
+                {pageNum}
+              </button>
+            );
+          })}
           <button
             onClick={() => setCurrentPage(currentPage + 1)}
             disabled={currentPage === totalPages}
-            className={`px-3 py-1 rounded-md ${
-              currentPage === totalPages
-                ? "bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed"
-                : "bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600"
-            }`}
+            className={`px-3 py-1 rounded-md ${currentPage === totalPages ? 'bg-gray-200 text-gray-500 dark:bg-gray-700 dark:text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
           >
-            Next
+            <HiChevronRight />
           </button>
         </div>
       </div>
-
-      {/* Add/Edit Product Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-6">
-              <div className="flex justify-between items-center mb-6">
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">
-                  {currentProduct ? 'Edit Product' : 'Add New Product'}
-                </h3>
-                <button 
-                  onClick={() => {
-                    setIsModalOpen(false);
-                    setCurrentProduct(null);
-                    setFormData({
-                      name: '',
-                      description: '',
-                      category: '',
-                      price: '',
-                      image_url: '',
-                      stock_status: 'In Stock',
-                      featured: false
-                    });
-                  }}
-                  className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300"
+      {/* Collapsible Scraping Logs */}
+      {paginatedProducts.map((product) => (
+        showLogs[product.id] && (
+          <div key={product.id + '-logs'} className="bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg shadow my-4 p-4">
+            <h4 className="font-semibold mb-2 text-gray-800 dark:text-gray-100">Scraping History for {product.name}</h4>
+            <table className="min-w-full text-sm">
+              <thead>
+                <tr>
+                  <th className="px-2 py-1 text-left">Timestamp</th>
+                  <th className="px-2 py-1 text-left">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {product.logs.map((log, idx) => (
+                  <tr key={idx}>
+                    <td className="px-2 py-1 text-gray-700 dark:text-gray-200">{log.time}</td>
+                    <td className={
+                      `px-2 py-1 font-semibold ${log.status === 'Success' ? 'text-green-600' : 'text-red-600'}`
+                    }>{log.status}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )
+      ))}
+      {/* Add/Edit Modal */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-8 w-full max-w-lg">
+            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{editingProduct ? 'Edit Product' : 'Add Product'}</h3>
+            <form onSubmit={handleSave} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Product Name</label>
+                <input
+                  type="text"
+                  name="name"
+                  value={form.name}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Image URL</label>
+                <input
+                  type="text"
+                  name="image"
+                  value={form.image}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Product URL</label>
+                <input
+                  type="text"
+                  name="url"
+                  value={form.url}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Site</label>
+                <select
+                  name="site"
+                  value={form.site}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  required
                 >
-                  ✕
+                  <option value="">Select Site</option>
+                  <option value="Amazon">Amazon</option>
+                  <option value="Flipkart">Flipkart</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Current Price</label>
+                <input
+                  type="number"
+                  name="price"
+                  value={form.price}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  required
+                />
+              </div>
+              <div className="flex justify-end space-x-2 mt-6">
+                <button
+                  type="button"
+                  className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                  onClick={closeModal}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+                >
+                  Save
                 </button>
               </div>
-              
-              <form onSubmit={handleSubmit}>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Product Name
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      required
-                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Description
-                    </label>
-                    <textarea
-                      name="description"
-                      value={formData.description}
-                      onChange={handleInputChange}
-                      rows="3"
-                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    ></textarea>
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Category
-                      </label>
-                      <select
-                        name="category"
-                        value={formData.category}
-                        onChange={handleInputChange}
-                        required
-                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      >
-                        <option value="">Select Category</option>
-                        {categories.filter(cat => cat !== 'All').map((category, index) => (
-                          <option key={index} value={category}>{category}</option>
-                        ))}
-                      </select>
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Price
-                      </label>
-                      <input
-                        type="number"
-                        name="price"
-                        value={formData.price}
-                        onChange={handleInputChange}
-                        required
-                        min="0"
-                        step="0.01"
-                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Image URL
-                    </label>
-                    <input
-                      type="text"
-                      name="image_url"
-                      value={formData.image_url}
-                      onChange={handleInputChange}
-                      className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                    />
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                        Stock Status
-                      </label>
-                      <select
-                        name="stock_status"
-                        value={formData.stock_status}
-                        onChange={handleInputChange}
-                        className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
-                      >
-                        <option value="In Stock">In Stock</option>
-                        <option value="Out of Stock">Out of Stock</option>
-                      </select>
-                    </div>
-                    
-                    <div className="flex items-center h-full pt-6">
-                      <input
-                        type="checkbox"
-                        id="featured"
-                        name="featured"
-                        checked={formData.featured}
-                        onChange={handleInputChange}
-                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-                      />
-                      <label htmlFor="featured" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                        Featured Product
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="mt-6 flex justify-end space-x-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setIsModalOpen(false);
-                      setCurrentProduct(null);
-                      setFormData({
-                        name: '',
-                        description: '',
-                        category: '',
-                        price: '',
-                        image_url: '',
-                        stock_status: 'In Stock',
-                        featured: false
-                      });
-                    }}
-                    className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
-                  >
-                    {currentProduct ? 'Update Product' : 'Add Product'}
-                  </button>
-                </div>
-              </form>
-            </div>
+            </form>
           </div>
         </div>
       )}
