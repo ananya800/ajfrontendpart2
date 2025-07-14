@@ -141,7 +141,7 @@ const ProductManagement = () => {
             />
             <HiSearch className="absolute left-3 top-2.5 text-gray-400 dark:text-gray-500" />
           </div>
-          <button
+          <button 
             className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold shadow"
             onClick={() => openModal()}
           >
@@ -172,20 +172,20 @@ const ProductManagement = () => {
                 <td className="px-4 py-3 font-bold text-green-700 dark:text-green-400">₹{product.price}</td>
                 <td className="px-4 py-3 text-gray-500 dark:text-gray-300">{product.lastUpdated}</td>
                 <td className="px-4 py-3 text-right space-x-2">
-                  <button
+                    <button 
                     className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded shadow"
                     onClick={() => openModal(product)}
-                  >
+                    >
                     Edit
-                  </button>
-                  <button
+                    </button>
+                    <button 
                     className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded shadow"
                     onClick={() => handleDelete(product.id)}
-                  >
+                    >
                     Delete
-                  </button>
-                </td>
-              </tr>
+                    </button>
+                  </td>
+                </tr>
             ))}
           </tbody>
         </table>
@@ -217,13 +217,13 @@ const ProductManagement = () => {
               pageNum = currentPage - 2 + i;
             }
             return (
-              <button
-                key={i}
+            <button
+              key={i}
                 onClick={() => setCurrentPage(pageNum)}
                 className={`px-3 py-1 rounded-md ${currentPage === pageNum ? 'bg-indigo-600 text-white' : 'bg-gray-200 text-gray-700 dark:bg-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600'}`}
               >
                 {pageNum}
-              </button>
+            </button>
             );
           })}
           <button
@@ -258,7 +258,7 @@ const ProductManagement = () => {
                 ))}
               </tbody>
             </table>
-          </div>
+              </div>
         )
       ))}
       {/* Add/Edit Modal */}
@@ -267,42 +267,42 @@ const ProductManagement = () => {
           <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-8 w-full max-w-lg">
             <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">{editingProduct ? 'Edit Product' : 'Add Product'}</h3>
             <form onSubmit={handleSave} className="space-y-4">
-              <div>
+                  <div>
                 <label className="block text-sm font-medium mb-1">Product Name</label>
-                <input
-                  type="text"
-                  name="name"
+                    <input
+                      type="text"
+                      name="name"
                   value={form.name}
                   onChange={handleChange}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                  required
-                />
-              </div>
-              <div>
+                      required
+                    />
+                  </div>
+                  <div>
                 <label className="block text-sm font-medium mb-1">Image URL</label>
-                <input
+                      <input
                   type="text"
                   name="image"
                   value={form.image}
                   onChange={handleChange}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
-                  required
-                />
-              </div>
-              <div>
+                        required
+                      />
+                    </div>
+                  <div>
                 <label className="block text-sm font-medium mb-1">Product URL</label>
-                <input
-                  type="text"
+                    <input
+                      type="text"
                   name="url"
                   value={form.url}
                   onChange={handleChange}
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   required
-                />
-              </div>
-              <div>
+                    />
+                  </div>
+                    <div>
                 <label className="block text-sm font-medium mb-1">Site</label>
-                <select
+                      <select
                   name="site"
                   value={form.site}
                   onChange={handleChange}
@@ -312,11 +312,11 @@ const ProductManagement = () => {
                   <option value="">Select Site</option>
                   <option value="Amazon">Amazon</option>
                   <option value="Flipkart">Flipkart</option>
-                </select>
-              </div>
+                      </select>
+                    </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Current Price</label>
-                <input
+                      <input
                   type="number"
                   name="price"
                   value={form.price}
@@ -324,23 +324,23 @@ const ProductManagement = () => {
                   className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                   required
                 />
-              </div>
+                    </div>
               <div className="flex justify-end space-x-2 mt-6">
-                <button
-                  type="button"
+                  <button
+                    type="button"
                   className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                   onClick={closeModal}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
                   className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
-                >
+                  >
                   Save
-                </button>
-              </div>
-            </form>
+                  </button>
+                </div>
+              </form>
           </div>
         </div>
       )}

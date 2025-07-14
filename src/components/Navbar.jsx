@@ -82,12 +82,12 @@ const Navbar = () => {
                       >
                         Admin Panel
                       </Link>
-              <button
-                        className="w-full text-left px-4 py-2 text-primary hover:bg-secondary hover:text-white rounded-lg transition"
-                onClick={handleLogout}
-              >
-                Logout
-              </button>
+                      <button
+                        className="w-full text-left px-4 py-2 rounded-lg bg-gradient-to-r from-blue-500 via-indigo-500 to-pink-500 text-white font-semibold shadow hover:from-blue-600 hover:to-pink-600 transition-all focus:outline-none focus:ring-2 focus:ring-blue-400 mt-2"
+                        onClick={handleLogout}
+                      >
+                        Logout
+                      </button>
                     </div>
                   )}
                 </div>

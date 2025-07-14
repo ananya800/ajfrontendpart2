@@ -224,8 +224,8 @@ const UserManagement = () => {
                         onClick={() => setOpenMenuId(user.id === openMenuId ? null : user.id)}
                         ref={el => menuRefs.current[user.id] = el}
                       >
-                        <HiDotsVertical className="h-5 w-5" />
-                      </button>
+                          <HiDotsVertical className="h-5 w-5" />
+                        </button>
                       {openMenuId === user.id && (
                         <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10">
                           <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">

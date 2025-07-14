@@ -31,7 +31,7 @@ const SearchBar = ({ value, onSearch, placeholder, onSubmit }) => {
 
   return (
     <div className="w-full flex justify-center my-0 px-0">
-      <form onSubmit={handleSubmit} className="relative w-full max-w-md">
+      <form onSubmit={handleSubmit} className="relative w-full max-w-md flex">
         <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-blue-500">
           <FiSearch className="w-4 h-4" />
         </span>
@@ -40,16 +40,15 @@ const SearchBar = ({ value, onSearch, placeholder, onSubmit }) => {
           value={searchValue}
           onChange={handleChange}
           placeholder={placeholder || "Search products..."}
-          className="w-full pl-8 pr-3 py-2 rounded-lg border-2 border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-lg focus:outline-none focus:ring-0 focus:border-gradient-to-r focus:from-blue-400 focus:to-pink-400 transition-all text-base"
+          className="flex-1 pl-8 pr-3 py-2 rounded-l-lg border-2 border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-lg focus:outline-none focus:ring-0 focus:border-gradient-to-r focus:from-blue-400 focus:to-pink-400 transition-all text-base"
           style={{ borderImage: 'linear-gradient(90deg, #3b82f6, #a21caf, #ec4899) 1' }}
         />
         <button
           type="submit"
-          className="absolute inset-y-0 right-0 flex items-center pr-3 text-blue-500 hover:text-blue-700 transition-colors"
+          className="rounded-r-lg px-5 py-2 bg-gradient-to-r from-blue-500 via-indigo-500 to-pink-500 text-white font-semibold shadow-lg hover:from-blue-600 hover:to-pink-600 transition-all focus:outline-none focus:ring-2 focus:ring-blue-400"
+          aria-label="Search"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
+          <FiSearch className="w-5 h-5" />
         </button>
       </form>
     </div>

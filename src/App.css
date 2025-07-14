@@ -35,6 +35,28 @@
   }
 }
 
+@keyframes float {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+  25% { transform: translateY(-30px) scale(1.08) rotate(-8deg); }
+  50% { transform: translateY(10px) scale(0.96) rotate(6deg); }
+  75% { transform: translateY(-20px) scale(1.04) rotate(-4deg); }
+}
+.animate-float-slow {
+  animation: float 10s cubic-bezier(0.4,0.2,0.2,1) infinite;
+}
+.animate-float-fast {
+  animation: float 6s cubic-bezier(0.4,0.2,0.2,1) infinite;
+}
+@keyframes float2 {
+  0%, 100% { transform: translateY(0) scale(1) rotate(0deg); }
+  20% { transform: translateY(-40px) scale(1.12) rotate(12deg); }
+  50% { transform: translateY(20px) scale(0.92) rotate(-10deg); }
+  80% { transform: translateY(-25px) scale(1.06) rotate(8deg); }
+}
+.animate-float-rotate {
+  animation: float2 14s cubic-bezier(0.4,0.2,0.2,1) infinite;
+}
+
 .card {
   padding: 2em;
 }
