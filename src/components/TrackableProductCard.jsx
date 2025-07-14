@@ -39,8 +39,7 @@ const TrackableProductCard = ({ product, isTracked, onTrack, loggedInUserEmail }
       animate={{ opacity: 1, y: 0 }}
       whileHover={{ scale: 1.04, boxShadow: "0 8px 32px rgba(37,99,235,0.15)" }}
       transition={{ type: "spring", stiffness: 200, damping: 20 }}
-      className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-5 max-w-xs w-full flex flex-col justify-between items-center hover:shadow-xl transition relative cursor-pointer group m-auto"
-      onClick={handleCardClick}
+      className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-5 max-w-xs w-full flex flex-col justify-between items-center hover:shadow-xl transition relative group m-auto"
     >
       {/* Floating + button */}
       <button
@@ -67,7 +66,7 @@ const TrackableProductCard = ({ product, isTracked, onTrack, loggedInUserEmail }
       <img
         src={product.product_image}
         alt={product.product_name}
-        className="w-full h-48 object-cover rounded-xl mb-4 border border-gray-200 dark:border-gray-700"
+        className="w-full h-48 object-contain bg-white rounded-xl mb-4 border border-gray-200 dark:border-gray-700"
       />
 
       <div className="flex flex-col justify-between flex-1 w-full">
