@@ -1,5 +1,5 @@
-import { useState, useEffect } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import CategoryFilter from "../components/CategoryFilter";
 import SearchBar from "../components/SearchBar";
@@ -11,15 +11,12 @@ const categories = ["Mobiles", "Laptops", "Audio","Books","Home","Kitchen","Clot
 
 const Home = () => {
   const [selectedCategory, setSelectedCategory] = useState(null);
-  const location = useLocation();
-  const params = new URLSearchParams(location.search);
-  const [search, setSearch] = useState(params.get("search") || "");
-
-  useEffect(() => {
-    setSearch(params.get("search") || "");
-  }, [location.search]);
-
+  const [search, setSearch] = useState("");
   const navigate = useNavigate();
+
+  const handleSearchSubmit = (searchTerm) => {
+    navigate(`/search/${encodeURIComponent(searchTerm)}`);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
@@ -48,7 +45,7 @@ const Home = () => {
       </div>
 
       <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Remove SearchBar from here, since it's now in Navbar */}
+        <SearchBar value={search} onSearch={setSearch} onSubmit={handleSearchSubmit} />
 
         <div className="space-y-12 mt-8">
           {categories.map((cat) => (
@@ -59,6 +56,18 @@ const Home = () => {
               <ProductRowByCategory category={cat} search={search} />
             </div>
           ))}
+        </div>
+
+        {/* About & Contact */}
+        <div className="mt-20 mb-10 bg-gradient-to-r ... p-1">
+          <div className="rounded-2xl bg-white dark:bg-gray-900 p-4 md:p-8">
+            <AboutUs />
+          </div>
+        </div>
+        <div className="mt-20 mb-10 bg-gradient-to-r ... p-1">
+          <div className="rounded-2xl bg-white dark:bg-gray-900 p-4 md:p-8">
+            <ContactUs />
+          </div>
         </div>
       </div>
     </div>

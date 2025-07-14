@@ -5,6 +5,7 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import ProductDetail from "./pages/ProductDetail";
 import CategoryPage from "./pages/CategoryPage";
+import SearchResults from "./pages/SearchResults";
 import ReturnPolicy from "./pages/ReturnPolicy";
 import RefundPolicy from "./pages/RefundPolicy";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
@@ -56,6 +57,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/dashboard" element={<Dashboard />} />
       <Route path="/product/:product_id" element={<ProductDetail />} />
+      <Route path="/search/:productName" element={<SearchResults />} />
         <Route path="/category/:category" element={<CategoryPage />} />
         <Route path="/return-policy" element={<ReturnPolicy />} />
         <Route path="/refund-policy" element={<RefundPolicy />} />

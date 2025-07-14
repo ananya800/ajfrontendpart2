@@ -27,30 +27,23 @@ const UserManagement = () => {
     const fetchUsers = async () => {
       setLoading(true);
       try {
-        // In a real app, you would fetch this data from your backend
-        // For now, we'll use mock data
         const response = await axios.get(
           "http://localhost:3008/admin/allusersdetails", 
           { withCredentials: true }
-        )
-        const users = response.data.userdetails
-        
-        // // Simulate API delay
-        // await new Promise(resolve => setTimeout(resolve, 1000));
-        
+        );
+        const users = response.data.userdetails;
         // Mock user data
         const mockUsers = users.map((user, i) => ({
           id: i + 1,
           name: user.name,
-          email:  user.email,
+          email: user.email,
           createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)),
           trackedProducts: user.products_tracking,
-          tokensLeft: 100-user.products_tracking,
-          isPremium: user.role,
+          tokensLeft: 100 - user.products_tracking,
+          isPremium: user.role === 'premium',
           isBanned: Math.random() > 0.9,
           lastLogin: new Date(Date.now() - Math.floor(Math.random() * 1000000000))
         }));
-        
         setUsers(mockUsers);
       } catch (err) {
         console.error('Error fetching users:', err);
@@ -58,26 +51,20 @@ const UserManagement = () => {
         setLoading(false);
       }
     };
-
     fetchUsers();
   }, []);
 
   // Apply filters and search
   useEffect(() => {
     let result = [...users];
-    
     // Filter by user type
-    if (userTypeFilter === 'premium_user') {
+    if (userTypeFilter === 'premium') {
       result = result.filter(user => user.isPremium);
-    } else if (userTypeFilter === 'free_user') {
+    } else if (userTypeFilter === 'free') {
       result = result.filter(user => !user.isPremium);
     } else if (userTypeFilter === 'banned') {
       result = result.filter(user => user.isBanned);
     }
-     else if (userTypeFilter === 'admin') {
-      result = result.filter(user => user.isBanned);
-    }
-    
     // Apply search
     if (searchTerm) {
       const lowerCaseSearch = searchTerm.toLowerCase();
@@ -86,7 +73,6 @@ const UserManagement = () => {
         user.email.toLowerCase().includes(lowerCaseSearch)
       );
     }
-    
     // Apply sorting
     result.sort((a, b) => {
       if (a[sortConfig.key] < b[sortConfig.key]) {
@@ -97,7 +83,6 @@ const UserManagement = () => {
       }
       return 0;
     });
-    
     setFilteredUsers(result);
     setTotalPages(Math.ceil(result.length / usersPerPage));
     setCurrentPage(1); // Reset to first page when filters change
@@ -117,10 +102,6 @@ const UserManagement = () => {
   };
 
   const handleBanUser = async (userId) => {
-    // In a real app, you would call your API to ban the user
-    console.log(`Ban user ${userId}`);
-    
-    // Update the local state to reflect the change
     setUsers(prevUsers => 
       prevUsers.map(user => 
         user.id === userId ? { ...user, isBanned: !user.isBanned } : user
@@ -129,18 +110,10 @@ const UserManagement = () => {
   };
 
   const handleDeleteUser = async (userId) => {
-    // In a real app, you would call your API to delete the user
-    console.log(`Delete user ${userId}`);
-    
-    // Update the local state to reflect the change
     setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
   };
 
   const handleUpgradeUser = async (userId) => {
-    // In a real app, you would call your API to upgrade the user
-    console.log(`Upgrade user ${userId}`);
-    
-    // Update the local state to reflect the change
     setUsers(prevUsers => 
       prevUsers.map(user => 
         user.id === userId ? { ...user, isPremium: true } : user
@@ -167,7 +140,6 @@ const UserManagement = () => {
           </svg>
         </button>
       </div>
-
       {/* Filters and Search */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 mb-6 border border-gray-200 dark:border-gray-700">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between space-y-4 md:space-y-0">
@@ -187,7 +159,6 @@ const UserManagement = () => {
               </select>
             </div>
           </div>
-          
           <div className="relative">
             <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
               <HiSearch className="w-5 h-5 text-gray-500 dark:text-gray-400" />
@@ -202,122 +173,36 @@ const UserManagement = () => {
           </div>
         </div>
       </div>
-
       {/* Users Table */}
       <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead className="bg-gray-50 dark:bg-gray-700">
               <tr>
-                <th 
-                  scope="col" 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('name')}
-                >
-                  <div className="flex items-center">
-                    Name
-                    {sortConfig.key === 'name' && (
-                      <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </div>
-                </th>
-                <th 
-                  scope="col" 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('email')}
-                >
-                  <div className="flex items-center">
-                    Email
-                    {sortConfig.key === 'email' && (
-                      <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </div>
-                </th>
-                <th 
-                  scope="col" 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('createdAt')}
-                >
-                  <div className="flex items-center">
-                    Signup Date
-                    {sortConfig.key === 'createdAt' && (
-                      <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </div>
-                </th>
-                <th 
-                  scope="col" 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('trackedProducts')}
-                >
-                  <div className="flex items-center">
-                    Tracked Products
-                    {sortConfig.key === 'trackedProducts' && (
-                      <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </div>
-                </th>
-                <th 
-                  scope="col" 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer"
-                  onClick={() => handleSort('tokensLeft')}
-                >
-                  <div className="flex items-center">
-                    Tokens Left
-                    {sortConfig.key === 'tokensLeft' && (
-                      <span className="ml-1">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
-                    )}
-                  </div>
-                </th>
-                <th 
-                  scope="col" 
-                  className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
-                >
-                  Status
-                </th>
-                <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('name')}>Name {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('email')}>Email {sortConfig.key === 'email' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('createdAt')}>Signup Date {sortConfig.key === 'createdAt' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('trackedProducts')}>Tracked Products {sortConfig.key === 'trackedProducts' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('tokensLeft')}>Tokens Left {sortConfig.key === 'tokensLeft' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
+                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
               {getCurrentPageUsers().map((user) => (
                 <tr key={user.id} className={user.isBanned ? 'bg-red-50 dark:bg-red-900/20' : ''}>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center">
-                        <span className="text-indigo-600 dark:text-indigo-400 font-medium">{user.name.charAt(0)}</span>
-                      </div>
-                      <div className="ml-4">
-                        <div className="text-sm font-medium text-gray-900 dark:text-white">{user.name}</div>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900 dark:text-white">{user.email}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{user.createdAt.toLocaleDateString()}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
-                    {user.trackedProducts}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-500 dark:text-gray-400">{user.tokensLeft}</div>
-                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{user.name}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{user.email}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{user.createdAt.toLocaleDateString()}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{user.trackedProducts}</td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{user.tokensLeft}</td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     {user.isBanned ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
-                        Banned
-                      </span>
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">Banned</span>
                     ) : user.isPremium ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
-                        Premium
-                      </span>
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">Premium</span>
                     ) : (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">
-                        Free
-                      </span>
+                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">Free</span>
                     )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -372,7 +257,6 @@ const UserManagement = () => {
             </tbody>
           </table>
         </div>
-
         {/* Pagination */}
         <div className="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
           <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
@@ -399,19 +283,15 @@ const UserManagement = () => {
                   <span className="sr-only">Previous</span>
                   <HiChevronLeft className="h-5 w-5" />
                 </button>
-                
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
                   // Calculate page numbers to show (centered around current page)
                   const totalPagesToShow = 5;
                   let startPage = Math.max(1, currentPage - Math.floor(totalPagesToShow / 2));
                   const endPage = Math.min(totalPages, startPage + totalPagesToShow - 1);
-                  
                   if (endPage - startPage + 1 < totalPagesToShow) {
                     startPage = Math.max(1, endPage - totalPagesToShow + 1);
                   }
-                  
                   const pageNumber = startPage + i;
-                  
                   if (pageNumber <= endPage) {
                     return (
                       <button
@@ -429,7 +309,6 @@ const UserManagement = () => {
                   }
                   return null;
                 })}
-                
                 <button
                   onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
                   disabled={currentPage === totalPages}
