@@ -31,6 +31,17 @@ const Navbar = () => {
     navigate("/login");
   };
 
+  // Helper to get token count and user type
+  const getTokenInfo = () => {
+    if (!user) return { isFree: false, tokens: null };
+    // User object may be { isLoggedIn, details } or just user fields
+    const details = user.details || user;
+    const isPremium = details.role === 'premium' || details.isPremium;
+    const tokens = typeof details.tokens === 'number' ? details.tokens : (typeof details.tokensLeft === 'number' ? details.tokensLeft : 100);
+    return { isFree: !isPremium, tokens };
+  };
+  const { isFree, tokens } = getTokenInfo();
+
   return (
     <header className="bg-white dark:bg-gray-900 shadow-md">
       <nav className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -58,6 +69,12 @@ const Navbar = () => {
                 <Link to="/premium" className="hover:text-blue-500 font-medium">
                   Premium
                 </Link>
+                {/* Token count for free users */}
+                {isFree && (
+                  <span className="text-sm font-semibold text-yellow-600 bg-yellow-100 rounded-full px-3 py-1 ml-2">
+                    {tokens} tokens left
+                  </span>
+                )}
                 <div className="relative">
                   <button
                     className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 via-purple-500 to-pink-500 flex items-center justify-center shadow-lg border-2 border-white dark:border-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 ml-2"
@@ -94,6 +111,10 @@ const Navbar = () => {
             </>
           ) : (
             <>
+              {/* Token count for free users (not logged in, show default) */}
+              <span className="text-sm font-semibold text-yellow-600 bg-yellow-100 rounded-full px-3 py-1 ml-2">
+                100 tokens left
+              </span>
               <Link to="/login" className="hover:text-blue-500 font-medium">
                 Login
               </Link>

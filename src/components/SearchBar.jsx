@@ -32,15 +32,13 @@ const SearchBar = ({ value, onSearch, placeholder, onSubmit }) => {
   return (
     <div className="w-full flex justify-center my-0 px-0">
       <form onSubmit={handleSubmit} className="relative w-full max-w-md flex">
-        <span className="absolute inset-y-0 left-0 flex items-center pl-2 text-blue-500">
-          <FiSearch className="w-4 h-4" />
-        </span>
+        {/* Removed left-side search icon */}
         <input
           type="text"
           value={searchValue}
           onChange={handleChange}
           placeholder={placeholder || "Search products..."}
-          className="flex-1 pl-8 pr-3 py-2 rounded-l-lg border-2 border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-lg focus:outline-none focus:ring-0 focus:border-gradient-to-r focus:from-blue-400 focus:to-pink-400 transition-all text-base"
+          className="flex-1 pl-3 pr-3 py-2 rounded-l-lg border-2 border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-lg focus:outline-none focus:ring-0 focus:border-gradient-to-r focus:from-blue-400 focus:to-pink-400 transition-all text-base"
           style={{ borderImage: 'linear-gradient(90deg, #3b82f6, #a21caf, #ec4899) 1' }}
         />
         <button
