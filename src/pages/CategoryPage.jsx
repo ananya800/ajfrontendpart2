@@ -30,7 +30,7 @@ const CategoryPage = () => {
         `http://localhost:3008/category/${category}?page=${currentPage}&offset=${offset}&limit=${BATCH_SIZE}`,
         { withCredentials: true }
       );
-      const newProducts = response.data || [];
+      const newProducts = response.data.data || [];
       setProducts(prev => reset ? newProducts : [...prev, ...newProducts]);
       setHasMore(newProducts.length === BATCH_SIZE);
       if (reset) setPage(1); else setPage(prev => prev + 1);

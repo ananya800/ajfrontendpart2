@@ -11,7 +11,8 @@ const SearchResults = () => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [tracked, setTracked] = useState([]); // mock tracked product ids
+  const [tracked, setTracked] = useState([]); 
+  // mock tracked product ids
 
   // Mock logged in user email
   const loggedInUserEmail = 'user@example.com';
