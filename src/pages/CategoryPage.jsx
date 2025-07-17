@@ -23,8 +23,11 @@ const CategoryPage = () => {
     setLoading(true);
     setAddError("");
     try {
+      // Calculate page and offset for the API
+      const currentPage = reset ? 0 : page;
+      const offset = currentPage * BATCH_SIZE;
       const response = await axios.get(
-        `http://localhost:3008/category/${category}?skip=${reset ? 0 : page * BATCH_SIZE}&limit=${BATCH_SIZE}`,
+        `http://localhost:3008/category/${category}?page=${currentPage}&offset=${offset}&limit=${BATCH_SIZE}`,
         { withCredentials: true }
       );
       const newProducts = response.data || [];
