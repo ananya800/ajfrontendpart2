@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { PlusIcon } from '@heroicons/react/24/solid';
+import axios from "axios";
 
 const TrackableProductCard = ({ product, isTracked, onTrack, loggedInUserEmail }) => {
   const [adding, setAdding] = useState(false);
@@ -20,11 +21,20 @@ const TrackableProductCard = ({ product, isTracked, onTrack, loggedInUserEmail }
     setAdding(true);
     setToast(null);
     try {
-      // Simulate API call
-      await new Promise(res => setTimeout(res, 1200));
-      // Example: await axios.post('/addproduct', { url: product.product_url, email: loggedInUserEmail });
-      setToast({ type: 'success', message: 'Tracking started successfully ✅' });
-      if (onTrack) onTrack(product);
+      // Real API call to add_searched_product
+      const response = await axios.post(
+        `http://localhost:3008/producthome/add_searched_product/${product.product_id}`,
+        {},
+        { withCredentials: true }
+      );
+      if (response.data && response.data.status === "success") {
+        setToast({ type: 'success', message: 'Tracking started successfully ✅' });
+        if (onTrack) onTrack(product);
+      } else if (response.data && response.data.message === "PRODUCT ALREADY SEARCHING") {
+        setToast({ type: 'error', message: 'Product already being tracked.' });
+      } else {
+        setToast({ type: 'error', message: response.data.message || 'Failed to start tracking ❌' });
+      }
     } catch (err) {
       setToast({ type: 'error', message: 'Failed to start tracking ❌' });
     } finally {
