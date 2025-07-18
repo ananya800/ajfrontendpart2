@@ -34,26 +34,22 @@ const Sparkline = ({ data }) => {
 };
 
 const ProductCard = ({ product, onViewDetail, onRemove }) => {
-  const showPercent =
-    product.percentage_change !== undefined &&
-    !isNaN(product.percentage_change);
+  const showPercent = typeof product.percentage_change === 'number';
   const navigate = useNavigate();
 
-  // Calculate price change if available
   const showPriceChange = 
     product.priceHistory && 
     product.priceHistory.length > 1 &&
     product.product_price !== undefined;
   
   let priceChange = 0;
-  if (showPriceChange && product.priceHistory.length >= 2) {
+  if (showPriceChange) {
     const currentPrice = product.product_price;
     const previousPrice = product.priceHistory[product.priceHistory.length - 2].product_price;
     priceChange = currentPrice - previousPrice;
   }
 
   const handleCardClick = (e) => {
-    // Prevent navigation if clicking the remove button
     if (e.target.closest("button[title='Remove product']")) return;
     navigate(`/product/${product.product_id}`);
   };
@@ -71,33 +67,23 @@ const ProductCard = ({ product, onViewDetail, onRemove }) => {
       className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-4 w-72 flex-shrink-0 flex flex-col items-center hover:shadow-2xl transition border border-gray-200 dark:border-gray-700 relative"
       onClick={handleCardClick}
     >
-      {/* Merchant Logo */}
       {merchantLogo && (
         <img src={merchantLogo} alt="Merchant" className="absolute top-2 left-2 w-8 h-8 object-contain bg-white rounded-full border border-gray-200 dark:border-gray-700 shadow" />
       )}
-      {/* Remove button */}
       {onRemove && (
         <button
-          onClick={(e) => { e.stopPropagation(); onRemove(product); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove(product.product_id);
+          }}
           className="absolute top-2 right-2 text-gray-400 hover:text-red-500 bg-white dark:bg-gray-900 rounded-full p-1 shadow"
           title="Remove product"
         >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            stroke="currentColor"
-            strokeWidth="2"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M6 18L18 6M6 6l12 12"
-            />
+          <svg className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </button>
       )}
-      {/* Price change indicator badge */}
       {priceChange !== 0 && (
         <div className={`absolute top-2 right-10 font-bold text-sm px-2 py-1 rounded-full shadow-md ${
           priceChange < 0 
@@ -112,16 +98,13 @@ const ProductCard = ({ product, onViewDetail, onRemove }) => {
         alt={product.product_name}
         className="w-28 h-28 object-contain bg-white rounded mb-2 border border-gray-100 dark:border-gray-700"
       />
-      {/* Product name - clamped to 2 lines */}
       <div className="font-semibold text-lg text-center mb-1 text-gray-900 dark:text-gray-100 line-clamp-2 w-full px-2">
         {product.product_name}
       </div>
       <div className="text-blue-600 font-bold text-xl mb-1">
         ₹{product.product_price}
       </div>
-      {/* Price history sparkline */}
       {product.history && <Sparkline data={product.history} />}
-      {/* Price drop percent if provided */}
       {showPercent && (
         <div
           className={`text-xs mb-2 ${

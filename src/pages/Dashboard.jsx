@@ -8,16 +8,22 @@ const Dashboard = () => {
   const [products, setProducts] = useState([]);
   const [addError, setAddError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [addLoading, setAddLoading] = useState(false);
 
-  // Load products on mount
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const response = await axios.get("http://localhost:3008/producthome",
-        {withCredentials: true}
-      );
+      const response = await axios.get("http://localhost:3008/producthome", {
+        withCredentials: true,
+      });
       console.log("Fetched products:", response.data);
-      setProducts(response.data);
+
+      // Normalize product_id on each item
+      const normalized = response.data.map((item) => ({
+        ...item,
+        product_id: item.product_id || item._id || item.id,
+      }));
+      setProducts(normalized);
     } catch (err) {
       console.error("Error fetching products:", err);
       setAddError("Failed to load products.");
@@ -33,7 +39,7 @@ const Dashboard = () => {
   const handleAdd = async (e) => {
     e.preventDefault();
     setAddError("");
-    setLoading(true);
+    setAddLoading(true);
 
     try {
       const response = await axios.post(
@@ -46,21 +52,28 @@ const Dashboard = () => {
       await fetchProducts();
     } catch (err) {
       console.error("Error adding product:", err);
-      setAddError("Failed to add product. Make sure the URL is valid.");
+      setAddError(
+        err.response?.data?.message ||
+          "Failed to add product. Make sure the URL is valid."
+      );
     } finally {
-      setLoading(false);
+      setAddLoading(false);
     }
   };
 
-  const handleRemove = async (productId) => {
+  const handleRemove = async (product_id) => {
     setLoading(true);
     setAddError("");
     try {
-      await axios.delete(`http://localhost:3008/producthome/${productId}`);
-      console.log("Product removed:", productId);
+      await axios.delete(
+        `http://localhost:3008/producthome/remove/${product_id}`,
+        {
+          withCredentials: true,
+        }
+      );
       await fetchProducts();
     } catch (err) {
-      console.error("Error removing product:", err);
+      console.error("Error removing product:", err.response || err.message);
       setAddError("Failed to remove product.");
     } finally {
       setLoading(false);
@@ -81,30 +94,37 @@ const Dashboard = () => {
         />
         <button
           type="submit"
-          disabled={loading}
+          disabled={addLoading}
           className={`px-6 py-2 rounded-r transition ${
-            loading
+            addLoading
               ? "bg-blue-400 cursor-not-allowed"
               : "bg-blue-600 hover:bg-blue-700 text-white"
           }`}
         >
-          {loading ? "Processing..." : "Add"}
+          {addLoading ? "Processing..." : "Add"}
         </button>
       </form>
 
-      {addError && <div className="text-red-600 text-center mt-2">{addError}</div>}
+      {addError && (
+        <div className="text-red-600 text-center mt-2">{addError}</div>
+      )}
 
       <div className="flex flex-wrap gap-6 justify-center mt-10">
         {loading && products.length === 0 ? (
-          <div className="text-gray-500 dark:text-gray-400">Loading products...</div>
+          <div className="text-gray-500 dark:text-gray-400">
+            Loading products...
+          </div>
         ) : products.length === 0 ? (
-          <div className="text-gray-500 dark:text-gray-400">No products added yet.</div>
+          <div className="text-gray-500 dark:text-gray-400">
+            No products added yet.
+          </div>
         ) : (
           products.map((product) => (
             <ProductCard
-              key={product._id || product.id}
+              key={product.product_id}
               product={product}
-              onRemove={() => handleRemove(product._id || product.id)}
+              onRemove={() => handleRemove(product.product_id)}
+              isTracked={true}
             />
           ))
         )}
