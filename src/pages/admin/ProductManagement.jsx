@@ -34,7 +34,7 @@ const ProductManagement = () => {
       try {
         const response = await axios.get(`http://localhost:3008/admin/admin_products_view?page=${currentPage}&limit=${productsPerPage}`, { withCredentials: true });
         setProducts(response.data.products);
-        conso;e.log('Fetched products:', response.data.products);
+        console.log('Fetched products:', response.data.products);
         // If backend returns total count, set totalPages accordingly
         // setTotalPages(Math.ceil(response.data.total / productsPerPage));
       } catch (err) {
@@ -161,13 +161,13 @@ const ProductManagement = () => {
               </tr>
             ) : (
               products.map((product) => (
-                <tr key={product.id}>
-                  <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{product.name || product.product_name}</td>
-                  <td className="px-4 py-3"><img src={product.image || product.product_image} alt={product.name || product.product_name} className="w-16 h-16 object-cover rounded" /></td>
-                  <td className="px-4 py-3"><a href={product.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">Link</a></td>
-                  <td className="px-4 py-3">{product.site}</td>
-                  <td className="px-4 py-3 font-bold text-green-700 dark:text-green-400">₹{product.price || product.product_price}</td>
-                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300">{product.lastUpdated || product.last_updated}</td>
+                <tr key={product.product_id}>
+                  <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{product.product_name}</td>
+                  <td className="px-4 py-3"><img src={product.product_image} alt={product.name || product.product_name} className="w-16 h-16 object-cover rounded" /></td>
+                  <td className="px-4 py-3"><a href={product.product_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">Link</a></td>
+                  <td className="px-4 py-3">{amazon}</td>
+                  <td className="px-4 py-3 font-bold text-green-700 dark:text-green-400">₹{ product.product_price}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300">{product.last_updated}</td>
                   <td className="px-4 py-3 text-right space-x-2">
                     <button 
                       className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded shadow"
@@ -177,7 +177,7 @@ const ProductManagement = () => {
                     </button>
                     <button 
                       className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded shadow"
-                      onClick={() => handleDelete(product.id)}
+                      onClick={() => handleDelete(product.product_id)}
                     >
                       Delete
                     </button>
