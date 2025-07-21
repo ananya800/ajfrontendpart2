@@ -253,6 +253,14 @@ const UserManagement = () => {
                 <input type="number" name="tokens" value={editForm.tokens || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
               </div>
               <div>
+                <label className="block text-sm font-medium mb-1">Active Alerts</label>
+                <input type="number" name="active_alerts" value={editForm.active_alerts || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Billing</label>
+                <input type="text" name="billing" value={editForm.billing || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+              </div>
+              <div>
                 <label className="block text-sm font-medium mb-1">Role</label>
                 <select name="role" value={editForm.role || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" required>
                   <option value="">Select Role</option>

@@ -212,11 +212,7 @@ const Dashboard = () => {
         <div>
           <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{title}</p>
           <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value.toLocaleString()}</h3>
-          {change && (
-            <p className={`text-xs mt-2 ${change > 0 ? 'text-green-500' : 'text-red-500'}`}>
-              {change > 0 ? '↑' : '↓'} {Math.abs(change)}% from last month
-            </p>
-          )}
+        
         </div>
         <div className={`p-3 rounded-full bg-${color}-100 dark:bg-${color}-900/30`}>
           {icon}
