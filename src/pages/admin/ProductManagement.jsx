@@ -1,34 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { HiSearch, HiFilter, HiChevronLeft, HiChevronRight } from 'react-icons/hi';
-
-const mockProducts = [
-  {
-    id: 1,
-    name: 'Apple iPhone 14',
-    image: 'https://m.media-amazon.com/images/I/61cwywLZR-L._AC_UY218_.jpg',
-    url: 'https://www.amazon.in/dp/B0BDK62PDX',
-    site: 'Amazon',
-    price: 69999,
-    lastUpdated: '2024-06-01 10:30',
-    logs: [
-      { time: '2024-06-01 10:30', status: 'Success' },
-      { time: '2024-05-31 09:00', status: 'Fail' },
-    ],
-  },
-  {
-    id: 2,
-    name: 'Samsung Galaxy S23',
-    image: 'https://m.media-amazon.com/images/I/81ZSn2rk9WL._AC_UY218_.jpg',
-    url: 'https://www.flipkart.com/samsung-galaxy-s23',
-    site: 'Flipkart',
-    price: 59999,
-    lastUpdated: '2024-06-01 09:45',
-    logs: [
-      { time: '2024-06-01 09:45', status: 'Success' },
-      { time: '2024-05-30 08:00', status: 'Success' },
-    ],
-  },
-];
+import axios from 'axios';
 
 const emptyProduct = {
   id: null,
@@ -42,7 +14,8 @@ const emptyProduct = {
 };
 
 const ProductManagement = () => {
-  const [products, setProducts] = useState(mockProducts);
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   const [form, setForm] = useState(emptyProduct);
@@ -52,6 +25,26 @@ const ProductManagement = () => {
   const [sortDirection, setSortDirection] = useState('asc');
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 10;
+  const [totalPages, setTotalPages] = useState(1);
+
+  // Fetch products from backend API
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.get(`http://localhost:3008/admin/admin_products_view?page=${currentPage}&limit=${productsPerPage}`, { withCredentials: true });
+        setProducts(response.data.products);
+        conso;e.log('Fetched products:', response.data.products);
+        // If backend returns total count, set totalPages accordingly
+        // setTotalPages(Math.ceil(response.data.total / productsPerPage));
+      } catch (err) {
+        console.error('Error fetching products:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProducts();
+  }, [currentPage]);
 
   // Filtering
   const filteredProducts = useMemo(() => {
@@ -77,7 +70,6 @@ const ProductManagement = () => {
   }, [filteredProducts, sortField, sortDirection]);
 
   // Pagination
-  const totalPages = Math.ceil(sortedProducts.length / productsPerPage);
   const paginatedProducts = sortedProducts.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage);
 
   // Open modal for add/edit
@@ -163,30 +155,36 @@ const ProductManagement = () => {
             </tr>
           </thead>
           <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-            {paginatedProducts.map((product) => (
-              <tr key={product.id}>
-                <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{product.name}</td>
-                <td className="px-4 py-3"><img src={product.image} alt={product.name} className="w-16 h-16 object-cover rounded" /></td>
-                <td className="px-4 py-3"><a href={product.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">Link</a></td>
-                <td className="px-4 py-3">{product.site}</td>
-                <td className="px-4 py-3 font-bold text-green-700 dark:text-green-400">₹{product.price}</td>
-                <td className="px-4 py-3 text-gray-500 dark:text-gray-300">{product.lastUpdated}</td>
-                <td className="px-4 py-3 text-right space-x-2">
+            {products.length === 0 ? (
+              <tr>
+                <td colSpan="7" className="text-center py-6 text-gray-500">No products found.</td>
+              </tr>
+            ) : (
+              products.map((product) => (
+                <tr key={product.id}>
+                  <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{product.name || product.product_name}</td>
+                  <td className="px-4 py-3"><img src={product.image || product.product_image} alt={product.name || product.product_name} className="w-16 h-16 object-cover rounded" /></td>
+                  <td className="px-4 py-3"><a href={product.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">Link</a></td>
+                  <td className="px-4 py-3">{product.site}</td>
+                  <td className="px-4 py-3 font-bold text-green-700 dark:text-green-400">₹{product.price || product.product_price}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300">{product.lastUpdated || product.last_updated}</td>
+                  <td className="px-4 py-3 text-right space-x-2">
                     <button 
-                    className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded shadow"
-                    onClick={() => openModal(product)}
+                      className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded shadow"
+                      onClick={() => openModal(product)}
                     >
-                    Edit
+                      Edit
                     </button>
                     <button 
-                    className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded shadow"
-                    onClick={() => handleDelete(product.id)}
+                      className="px-3 py-1 bg-red-600 hover:bg-red-700 text-white rounded shadow"
+                      onClick={() => handleDelete(product.id)}
                     >
-                    Delete
+                      Delete
                     </button>
                   </td>
                 </tr>
-            ))}
+              ))
+            )}
           </tbody>
         </table>
       </div>
@@ -194,8 +192,8 @@ const ProductManagement = () => {
       <div className="flex justify-between items-center mt-6">
         <div className="text-sm text-gray-700 dark:text-gray-300">
           Showing <span className="font-medium">{(currentPage - 1) * productsPerPage + 1}</span> to{' '}
-          <span className="font-medium">{Math.min(currentPage * productsPerPage, sortedProducts.length)}</span> of{' '}
-          <span className="font-medium">{sortedProducts.length}</span> products
+          <span className="font-medium">{Math.min(currentPage * productsPerPage, products.length)}</span> of{' '}
+          <span className="font-medium">{products.length}</span> products
         </div>
         <div className="flex space-x-2">
           <button

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import axios from 'axios';
 import { 
   HiSearch, 
@@ -11,10 +11,11 @@ import {
   HiChevronLeft,
   HiChevronRight
 } from 'react-icons/hi';
+import Toast from '../../components/Toast';
+import UserTable from '../../components/UserTable';
 
 const UserManagement = () => {
   const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
   const [userTypeFilter, setUserTypeFilter] = useState('all');
@@ -22,8 +23,87 @@ const UserManagement = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
   const usersPerPage = 10;
-  const [openMenuId, setOpenMenuId] = useState(null);
-  const menuRefs = useRef({});
+
+  // 1. Add state for modal and editing user
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  // Update editForm state to include all fields
+  const [editForm, setEditForm] = useState({ name: '', email: '', role: '', createdAt: '', trackedProducts: '', tokensLeft: '' });
+  const [formError, setFormError] = useState('');
+  const [toast, setToast] = useState(null);
+
+  // 2. Helper for toast
+  const showToast = (message, type = 'success') => {
+    setToast({ message, type });
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  // 3. Open edit modal
+  const openEditModal = (user) => {
+    setEditingUser(user);
+    setEditForm({
+      name: user.name,
+      email: user.email,
+      role: user.role || (user.isPremium ? 'premium' : 'free'),
+      createdAt: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : '',
+      trackedProducts: user.trackedProducts || '',
+      tokensLeft: user.tokensLeft || '',
+    });
+    setFormError('');
+    setShowEditModal(true);
+  };
+
+  // 4. Close modal
+  const closeEditModal = () => {
+    setShowEditModal(false);
+    setEditingUser(null);
+    setFormError('');
+  };
+
+  // 5. Handle form change
+  const handleEditChange = (e) => {
+    const { name, value, type } = e.target;
+    setEditForm({
+      ...editForm,
+      [name]: type === 'number' ? Number(value) : value,
+    });
+  };
+
+  // 6. Validate email
+  const isValidEmail = (email) => /.+@.+\..+/.test(email);
+
+  // 7. Save edited user
+  const handleEditSave = async (updated) => {
+    // updated is the form values from EditFormSection
+    try {
+      const res = await axios.put(
+        `http://localhost:3008/admin/admin_user_update/${editingUser.email}`,
+        {
+          name: updated.name,
+          phone_number: updated.phone_number,
+          products_tracking: updated.products_tracking,
+          role: updated.role,
+          active_alerts: updated.active_alerts,
+          billing: updated.billing,
+          signup_date: updated.createdAt || updated.signup_date,
+        },
+        { withCredentials: true }
+      );
+      if (res.data && res.data.message === 'SUCCESS') {
+        setUsers((prev) => prev.map((u) =>
+          u.email === editingUser.email
+            ? { ...u, ...updated, signup_date: updated.createdAt || updated.signup_date }
+            : u
+        ));
+        showToast('User updated successfully!', 'success');
+        closeEditModal();
+      } else {
+        showToast(res.data.message || 'Update failed', 'error');
+      }
+    } catch (err) {
+      showToast(err.response?.data?.message || 'Update failed', 'error');
+    }
+  };
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -33,20 +113,10 @@ const UserManagement = () => {
           "http://localhost:3008/admin/allusersdetails", 
           { withCredentials: true }
         );
+        // Use backend userdetails directly
         const users = response.data.userdetails;
-        // Mock user data
-        const mockUsers = users.map((user, i) => ({
-          id: i + 1,
-          name: user.name,
-          email: user.email,
-          createdAt: new Date(Date.now() - Math.floor(Math.random() * 10000000000)),
-          trackedProducts: user.products_tracking,
-          tokensLeft: 100 - user.products_tracking,
-          isPremium: user.role === 'premium',
-          isBanned: Math.random() > 0.9,
-          lastLogin: new Date(Date.now() - Math.floor(Math.random() * 1000000000))
-        }));
-        setUsers(mockUsers);
+        console.log('Fetched users:', users);
+        setUsers(users);
       } catch (err) {
         console.error('Error fetching users:', err);
       } finally {
@@ -55,16 +125,6 @@ const UserManagement = () => {
     };
     fetchUsers();
   }, []);
-
-  useEffect(() => {
-    function handleClickOutside(event) {
-      if (openMenuId !== null && menuRefs.current[openMenuId] && !menuRefs.current[openMenuId].contains(event.target)) {
-        setOpenMenuId(null);
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [openMenuId]);
 
   // Apply filters and search
   useEffect(() => {
@@ -95,43 +155,12 @@ const UserManagement = () => {
       }
       return 0;
     });
-    setFilteredUsers(result);
     setTotalPages(Math.ceil(result.length / usersPerPage));
     setCurrentPage(1); // Reset to first page when filters change
   }, [users, searchTerm, userTypeFilter, sortConfig]);
 
-  // Get current page of users
-  const getCurrentPageUsers = () => {
-    const startIndex = (currentPage - 1) * usersPerPage;
-    return filteredUsers.slice(startIndex, startIndex + usersPerPage);
-  };
-
-  const handleSort = (key) => {
-    setSortConfig(prevConfig => ({
-      key,
-      direction: prevConfig.key === key && prevConfig.direction === 'asc' ? 'desc' : 'asc'
-    }));
-  };
-
-  const handleBanUser = async (userId) => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => 
-        user.id === userId ? { ...user, isBanned: !user.isBanned } : user
-      )
-    );
-  };
-
-  const handleDeleteUser = async (userId) => {
-    setUsers(prevUsers => prevUsers.filter(user => user.id !== userId));
-  };
-
-  const handleUpgradeUser = async (userId) => {
-    setUsers(prevUsers => 
-      prevUsers.map(user => 
-        user.id === userId ? { ...user, isPremium: true } : user
-      )
-    );
-  };
+  // Calculate paginated users
+  const paginatedUsers = users.slice((currentPage - 1) * usersPerPage, currentPage * usersPerPage);
 
   if (loading) {
     return (
@@ -186,162 +215,62 @@ const UserManagement = () => {
         </div>
       </div>
       {/* Users Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden border border-gray-200 dark:border-gray-700">
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className="bg-gray-50 dark:bg-gray-700">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('name')}>Name {sortConfig.key === 'name' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('email')}>Email {sortConfig.key === 'email' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('createdAt')}>Signup Date {sortConfig.key === 'createdAt' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('trackedProducts')}>Tracked Products {sortConfig.key === 'trackedProducts' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider cursor-pointer" onClick={() => handleSort('tokensLeft')}>Tokens Left {sortConfig.key === 'tokensLeft' && (sortConfig.direction === 'asc' ? '↑' : '↓')}</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-              {getCurrentPageUsers().map((user) => (
-                <tr key={user.id} className={user.isBanned ? 'bg-red-50 dark:bg-red-900/20' : ''}>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{user.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">{user.email}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{user.createdAt.toLocaleDateString()}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{user.trackedProducts}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{user.tokensLeft}</td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    {user.isBanned ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">Banned</span>
-                    ) : user.isPremium ? (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">Premium</span>
-                    ) : (
-                      <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300">Free</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="relative inline-block text-left">
-                      <button
-                        className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                        onClick={() => setOpenMenuId(user.id === openMenuId ? null : user.id)}
-                        ref={el => menuRefs.current[user.id] = el}
-                      >
-                          <HiDotsVertical className="h-5 w-5" />
-                        </button>
-                      {openMenuId === user.id && (
-                        <div className="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-700 ring-1 ring-black ring-opacity-5 z-10">
-                          <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
-                            <button
-                              onClick={() => window.location.href = `/admin/users/${user.id}`}
-                              className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                              role="menuitem"
-                            >
-                              <HiOutlineEye className="mr-3 h-5 w-5 text-gray-500 dark:text-gray-400" />
-                              View Details
-                            </button>
-                            {!user.isPremium && (
-                              <button
-                                onClick={() => handleUpgradeUser(user.id)}
-                                className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                                role="menuitem"
-                              >
-                                <HiOutlineStar className="mr-3 h-5 w-5 text-purple-500" />
-                                Upgrade to Premium
-                              </button>
-                            )}
-                            <button
-                              onClick={() => handleBanUser(user.id)}
-                              className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                              role="menuitem"
-                            >
-                              <HiBan className="mr-3 h-5 w-5 text-red-500" />
-                              {user.isBanned ? 'Unban User' : 'Ban User'}
-                            </button>
-                            <button
-                              onClick={() => handleDeleteUser(user.id)}
-                              className="flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-600 w-full text-left"
-                              role="menuitem"
-                            >
-                              <HiOutlineTrash className="mr-3 h-5 w-5 text-red-500" />
-                              Delete User
-                            </button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        {/* Pagination */}
-        <div className="bg-white dark:bg-gray-800 px-4 py-3 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 sm:px-6">
-          <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
-            <div>
-              <p className="text-sm text-gray-700 dark:text-gray-300">
-                Showing <span className="font-medium">{(currentPage - 1) * usersPerPage + 1}</span> to{' '}
-                <span className="font-medium">
-                  {Math.min(currentPage * usersPerPage, filteredUsers.length)}
-                </span>{' '}
-                of <span className="font-medium">{filteredUsers.length}</span> users
-              </p>
-            </div>
-            <div>
-              <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
-                <button
-                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
-                  disabled={currentPage === 1}
-                  className={`relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium ${
-                    currentPage === 1
-                      ? 'text-gray-300 dark:text-gray-600'
-                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <span className="sr-only">Previous</span>
-                  <HiChevronLeft className="h-5 w-5" />
-                </button>
-                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  // Calculate page numbers to show (centered around current page)
-                  const totalPagesToShow = 5;
-                  let startPage = Math.max(1, currentPage - Math.floor(totalPagesToShow / 2));
-                  const endPage = Math.min(totalPages, startPage + totalPagesToShow - 1);
-                  if (endPage - startPage + 1 < totalPagesToShow) {
-                    startPage = Math.max(1, endPage - totalPagesToShow + 1);
-                  }
-                  const pageNumber = startPage + i;
-                  if (pageNumber <= endPage) {
-                    return (
-                      <button
-                        key={pageNumber}
-                        onClick={() => setCurrentPage(pageNumber)}
-                        className={`relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium ${
-                          currentPage === pageNumber
-                            ? 'z-10 bg-indigo-50 dark:bg-indigo-900/30 border-indigo-500 dark:border-indigo-500 text-indigo-600 dark:text-indigo-300'
-                            : 'bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                        }`}
-                      >
-                        {pageNumber}
-                      </button>
-                    );
-                  }
-                  return null;
-                })}
-                <button
-                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
-                  disabled={currentPage === totalPages}
-                  className={`relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium ${
-                    currentPage === totalPages
-                      ? 'text-gray-300 dark:text-gray-600'
-                      : 'text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
-                  }`}
-                >
-                  <span className="sr-only">Next</span>
-                  <HiChevronRight className="h-5 w-5" />
-                </button>
-              </nav>
-            </div>
+      <UserTable
+        users={paginatedUsers}
+        onEdit={openEditModal}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={setCurrentPage}
+      />
+      {/* Edit User Modal */}
+      {showEditModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-gray-900 rounded-lg shadow-xl p-8 w-full max-w-md max-h-[90vh] flex flex-col">
+            <h3 className="text-xl font-bold mb-4 text-gray-900 dark:text-white">Edit User</h3>
+            <form onSubmit={handleEditSave} className="space-y-4 overflow-y-auto flex-1" style={{ maxHeight: '60vh' }}>
+              <div>
+                <label className="block text-sm font-medium mb-1">Name</label>
+                <input type="text" name="name" value={editForm.name || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Email</label>
+                <input type="email" name="email" value={editForm.email || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Phone</label>
+                <input type="text" name="phone_number" value={editForm.phone_number || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" required />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Signup Date</label>
+                <input type="date" name="createdAt" value={editForm.createdAt || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Tracked Products</label>
+                <input type="number" name="products_tracking" value={editForm.products_tracking || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Tokens</label>
+                <input type="number" name="tokens" value={editForm.tokens || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Role</label>
+                <select name="role" value={editForm.role || ''} onChange={handleEditChange} className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-900 dark:text-white" required>
+                  <option value="">Select Role</option>
+                  <option value="admin">Admin</option>
+                  <option value="premium">Premium</option>
+                  <option value="free">Free</option>
+                </select>
+              </div>
+              <div className="flex justify-end space-x-2 mt-6 sticky bottom-0 bg-white dark:bg-gray-900 pt-4">
+                <button type="button" className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700" onClick={closeEditModal}>Cancel</button>
+                <button type="submit" className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700">Save</button>
+              </div>
+            </form>
           </div>
         </div>
-      </div>
+      )}
+      {/* Toast notification */}
+      <Toast toast={toast} />
     </div>
   );
 };

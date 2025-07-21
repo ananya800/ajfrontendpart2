@@ -21,25 +21,30 @@ const TrackableProductCard = ({ product, isTracked, onTrack, loggedInUserEmail }
     setAdding(true);
     setToast(null);
     try {
-      // Real API call to add_searched_product
+      // Send all product details in the request body
       const response = await axios.post(
         `http://localhost:3008/producthome/add_searched_product/${product.product_id}`,
-        {},
+        {
+          product_id: product.product_id,
+          name: product.product_name,
+          price: product.product_price,
+          image: product.product_image,
+          // url: product.url,
+          // site: product.site,
+          // add any other relevant fields
+        },
         { withCredentials: true }
       );
       if (response.data && response.data.status === "success") {
-        setToast({ type: 'success', message: 'Tracking started successfully ✅' });
+        setToast({ type: 'success', message: 'Product added successfully!' });
         if (onTrack) onTrack(product);
-      } else if (response.data && response.data.message === "PRODUCT ALREADY SEARCHING") {
-        setToast({ type: 'error', message: 'Product already being tracked.' });
-      } else {
-        setToast({ type: 'error', message: response.data.message || 'Failed to start tracking ❌' });
+        setTimeout(() => setToast(null), 2500);
       }
+      // Do not show any error toasts for already tracked or other errors
     } catch (err) {
-      setToast({ type: 'error', message: 'Failed to start tracking ❌' });
+      // Do not show error toast
     } finally {
       setAdding(false);
-      setTimeout(() => setToast(null), 2500);
     }
   };
 
