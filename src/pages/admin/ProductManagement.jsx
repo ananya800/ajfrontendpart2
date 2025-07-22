@@ -50,7 +50,7 @@ const ProductManagement = () => {
   const filteredProducts = useMemo(() => {
     return products.filter(product => {
       const matchesSearch =
-        product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        product.product_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         product.site.toLowerCase().includes(searchTerm.toLowerCase());
       return matchesSearch;
     });
@@ -165,9 +165,9 @@ const ProductManagement = () => {
                   <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">{product.product_name}</td>
                   <td className="px-4 py-3"><img src={product.product_image} alt={product.name || product.product_name} className="w-16 h-16 object-cover rounded" /></td>
                   <td className="px-4 py-3"><a href={product.product_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline break-all">Link</a></td>
-                  <td className="px-4 py-3">{amazon}</td>
+                  <td className="px-4 py-3">{product.site || "amazon"}</td>
                   <td className="px-4 py-3 font-bold text-green-700 dark:text-green-400">₹{ product.product_price}</td>
-                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300">{product.last_updated}</td>
+                  <td className="px-4 py-3 text-gray-500 dark:text-gray-300">{product.date}</td>
                   <td className="px-4 py-3 text-right space-x-2">
                     <button 
                       className="px-3 py-1 bg-yellow-400 hover:bg-yellow-500 text-white rounded shadow"

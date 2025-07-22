@@ -29,7 +29,7 @@ const TrackableProductCard = ({ product, isTracked, onTrack, loggedInUserEmail }
           name: product.product_name,
           price: product.product_price,
           image: product.product_image,
-          // url: product.url,
+          url: product.url,
           // site: product.site,
           // add any other relevant fields
         },
