@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 
-const LoadingScreen = ({ message, duration = 0, onSkip = null }) => {
+const LoadingScreen = ({ message, duration = 0}) => {
   // const [showSkip, setShowSkip] = useState(false);
   const [currentMessage, setCurrentMessage] = useState(message || "Tracking best deals for you...");
   const messages = [

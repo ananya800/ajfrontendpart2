@@ -3,7 +3,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Navbar from '../components/Navbar';
 import TrackableProductCard from '../components/TrackableProductCard';
-// import { getMockSearchResults } from '../data/mockSearchResults';
 
 const SearchResults = () => {
   const { productName } = useParams();
@@ -12,10 +11,7 @@ const SearchResults = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [tracked, setTracked] = useState([]); 
-  // mock tracked product ids
 
-  // Mock logged in user email
-  const loggedInUserEmail = 'user@example.com';
 
   useEffect(() => {
     const fetchSearchResults = async () => {
@@ -25,6 +21,7 @@ const SearchResults = () => {
         const response = await axios.get(`http://localhost:3008/producthome/search/${productName}`,{withCredentials: true});
         if (response.data && Array.isArray(response.data)) {
           setProducts(response.data);
+          console.log('Search results:', response.data);
         } else {
           setProducts([]);
         }
@@ -125,12 +122,10 @@ const SearchResults = () => {
                   product_image: product.image,
                   product_name: product.title,
                   product_price: product.price,
-                  product_url: product.url || product.product_url || '#',
-                  product_id: product.id || product.product_id || index
+                  product_id:product.product_id
                 }}
-                isTracked={tracked.includes(product.id || product.product_id)}
+                isTracked={tracked.includes(product.product_id)}
                 onTrack={handleTrack}
-                loggedInUserEmail={loggedInUserEmail}
               />
             ))}
           </div>

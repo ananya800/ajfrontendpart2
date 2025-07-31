@@ -8,7 +8,7 @@ const ProductRow = ({ title, products, onViewDetail, onRemove }) => {
   const scroll = (direction) => {
     if (rowRef.current) {
       const { scrollLeft, clientWidth } = rowRef.current;
-      const scrollAmount = clientWidth * 0.7;
+      const scrollAmount = clientWidth * .7;
       rowRef.current.scrollTo({
         left: direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount,
         behavior: "smooth",

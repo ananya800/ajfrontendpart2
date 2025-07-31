@@ -34,20 +34,10 @@ const AdminSidebar = ({ isMobileOpen, toggleMobile }) => {
       icon: <HiShoppingBag className="w-6 h-6" />
     },
     {
-      name: 'Alerts',
-      path: '/admin/alerts',
-      icon: <HiBell className="w-6 h-6" />
-    },
-    {
       name: 'Analytics',
       path: '/admin/analytics',
       icon: <HiChartPie className="w-6 h-6" />
     },
-    {
-      name: 'Premium',
-      path: '/admin/premium',
-      icon: <HiCreditCard className="w-6 h-6" />
-    }
   ];
 
   const NavItem = ({ item }) => {

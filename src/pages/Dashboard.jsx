@@ -18,12 +18,7 @@ const Dashboard = () => {
       });
       console.log("Fetched products:", response.data);
 
-      // Normalize product_id on each item
-      const normalized = response.data.map((item) => ({
-        ...item,
-        product_id: item.product_id || item._id || item.id,
-      }));
-      setProducts(normalized);
+      setProducts(response.data || []);
     } catch (err) {
       console.error("Error fetching products:", err);
       setAddError("Failed to load products.");

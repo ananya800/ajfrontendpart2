@@ -7,8 +7,7 @@ const ProductRowByCategory = ({ category, search }) => {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [addError, setAddError] = useState("");
-  const [skipLoading, setSkipLoading] = useState(false);
-
+ 
   useEffect(() => {
     const fetchCategoryProducts = async () => {
       setLoading(true);
@@ -32,12 +31,11 @@ const ProductRowByCategory = ({ category, search }) => {
     search ? p.product_name.toLowerCase().includes(search.toLowerCase()) : true
   );
 
-  if (loading && !skipLoading) {
+  if (loading ) {
     return (
       <div className="relative h-64">
         <LoadingScreen 
           message={`Loading ${category} products...`} 
-          onSkip={() => setSkipLoading(true)} 
         />
       </div>
     );
@@ -48,7 +46,7 @@ const ProductRowByCategory = ({ category, search }) => {
       {addError ? (
         <p className="text-red-600 text-sm">{addError}</p>
       ) : (
-        <ProductRow title={category} products={filtered} loading={loading && skipLoading} />
+        <ProductRow title={category} products={filtered} loading={loading} />
       )}
     </>
   );

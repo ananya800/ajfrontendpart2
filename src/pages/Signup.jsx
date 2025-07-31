@@ -10,7 +10,7 @@ const Signup = () => {
     phone: '',
   });
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); // Add loading state
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e) => {

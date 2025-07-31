@@ -13,7 +13,6 @@ const CategoryPage = () => {
   const [products, setProducts] = useState([]);
   const [addError, setAddError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [skipLoading, setSkipLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [page, setPage] = useState(0);
   const loader = useRef();
@@ -23,7 +22,6 @@ const CategoryPage = () => {
     setLoading(true);
     setAddError("");
     try {
-      // Calculate page and offset for the API
       const currentPage = reset ? 0 : page;
       const offset = currentPage * BATCH_SIZE;
       const response = await axios.get(
@@ -50,21 +48,18 @@ const CategoryPage = () => {
     setHasMore(true);
     fetchProducts(true);
   }, [category]);
-
-  // Remove infinite scroll observer
-
+ 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      {loading && products.length === 0 && !skipLoading ? (
+      {loading && products.length === 0 ? (
         <LoadingScreen 
           message={`Finding best ${category} deals...`} 
-          onSkip={() => setSkipLoading(true)} 
         />
       ) : (
         <>
           <Navbar />
           <div className="w-full mx-auto px-4 py-8">
-            <h2 className="text-3xl font-bold mb-6 capitalize">{category}</h2>
+            <h2 className="text-3xl font-bold mb-6 capitalize text-black">{category}</h2>
 
             {addError && (
               <div className="text-center text-red-600 mb-4">{addError}</div>

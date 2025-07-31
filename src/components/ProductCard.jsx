@@ -4,57 +4,20 @@ import { motion } from "framer-motion";
 const getMerchantLogo = (url) => {
   if (!url) return null;
   if (url.includes('amazon')) return 'https://upload.wikimedia.org/wikipedia/commons/a/a9/Amazon_logo.svg';
-  if (url.includes('flipkart')) return 'https://upload.wikimedia.org/wikipedia/commons/1/13/Flipkart_logo.png';
-  if (url.includes('apple')) return 'https://upload.wikimedia.org/wikipedia/commons/f/fa/Apple_logo_black.svg';
-  if (url.includes('dell')) return 'https://upload.wikimedia.org/wikipedia/commons/4/48/Dell_Logo.svg';
-  if (url.includes('asus')) return 'https://upload.wikimedia.org/wikipedia/commons/6/6e/ASUS_Logo.svg';
-  if (url.includes('hp')) return 'https://upload.wikimedia.org/wikipedia/commons/2/2c/HP_logo_2012.svg';
-  if (url.includes('bose')) return 'https://upload.wikimedia.org/wikipedia/commons/7/7c/Bose_logo.svg';
-  if (url.includes('sony')) return 'https://upload.wikimedia.org/wikipedia/commons/2/20/Sony_wordmark.svg';
-  if (url.includes('jbl')) return 'https://upload.wikimedia.org/wikipedia/commons/5/5a/JBL_logo.svg';
-  return null;
-};
-
-const Sparkline = ({ data }) => {
-  if (!data || data.length < 2) return null;
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const points = data.map((v, i) => `${(i / (data.length - 1)) * 60},${40 - ((v - min) / (max - min || 1)) * 30}`).join(' ');
-  return (
-    <svg width="64" height="40" viewBox="0 0 64 40" className="mt-1 mb-2">
-      <polyline
-        fill="none"
-        stroke="#6366f1"
-        strokeWidth="3"
-        points={points}
-      />
-      <circle cx="64" cy={40 - ((data[data.length - 1] - min) / (max - min || 1)) * 30} r="3" fill="#6366f1" />
-    </svg>
-  );
+  
 };
 
 const ProductCard = ({ product, onViewDetail, onRemove }) => {
-  const showPercent = typeof product.percentage_change === 'number';
+
   const navigate = useNavigate();
 
-  const showPriceChange = 
-    product.priceHistory && 
-    product.priceHistory.length > 1 &&
-    product.product_price !== undefined;
   
-  let priceChange = 0;
-  if (showPriceChange) {
-    const currentPrice = product.product_price;
-    const previousPrice = product.priceHistory[product.priceHistory.length - 2].product_price;
-    priceChange = currentPrice - previousPrice;
-  }
-
   const handleCardClick = (e) => {
     if (e.target.closest("button[title='Remove product']")) return;
     navigate(`/product/${product.product_id}`);
   };
 
-  const merchantLogo = getMerchantLogo(product.url || product.product_url);
+  const merchantLogo = getMerchantLogo(product.product_url);
 
   return (
     <motion.div
@@ -84,15 +47,7 @@ const ProductCard = ({ product, onViewDetail, onRemove }) => {
           </svg>
         </button>
       )}
-      {priceChange !== 0 && (
-        <div className={`absolute top-2 right-10 font-bold text-sm px-2 py-1 rounded-full shadow-md ${
-          priceChange < 0 
-            ? "bg-green-500 text-white" 
-            : "bg-red-500 text-white"
-        }`}>
-          {priceChange < 0 ? "↓" : "↑"} ₹{Math.abs(priceChange)}
-        </div>
-      )}
+      
       <img
         src={product.product_image}
         alt={product.product_name}
@@ -104,18 +59,8 @@ const ProductCard = ({ product, onViewDetail, onRemove }) => {
       <div className="text-blue-600 font-bold text-xl mb-1">
         ₹{product.product_price}
       </div>
-      {product.history && <Sparkline data={product.history} />}
-      {showPercent && (
-        <div
-          className={`text-xs mb-2 ${
-            product.percentage_change < 0
-              ? "text-red-500"
-              : "text-green-500"
-          }`}
-        >
-          {product.percentage_change < 0 ? "↓" : "↑"} {Math.abs(product.percentage_change).toFixed(2)}%
-        </div>
-      )}
+      
+      
       <Link
         to={`/product/${product.product_id}`}
         className="mt-auto px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700 transition text-sm"

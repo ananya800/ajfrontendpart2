@@ -303,36 +303,6 @@ const Dashboard = () => {
           </div>
         </div>
       </div>
-
-      {/* Recent Activity */}
-      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
-        <h3 className="text-lg font-medium text-gray-800 dark:text-white mb-4">Recent Activity</h3>
-        <div className="divide-y divide-gray-200 dark:divide-gray-700">
-          {recentActivity.map((activity) => (
-            <div key={activity.id} className="py-4 flex items-start">
-              <div className="mr-4 mt-1">
-                {getActivityIcon(activity.type)}
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900 dark:text-white">{activity.message}</p>
-                <div className="flex items-center mt-1">
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{activity.user}</p>
-                  <span className="mx-2 text-gray-300 dark:text-gray-600">•</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">{activity.time}</p>
-                </div>
-              </div>
-              <button className="p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
-                <HiExclamation className="w-5 h-5 text-gray-400 dark:text-gray-500" />
-              </button>
-            </div>
-          ))}
-        </div>
-        <div className="mt-4 text-center">
-          <button className="text-sm font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-800 dark:hover:text-indigo-300">
-            View All Activity
-          </button>
-        </div>
-      </div>
     </div>
   );
 };
