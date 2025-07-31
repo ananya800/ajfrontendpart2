@@ -15,7 +15,7 @@ const categories = [
 ];
 
 const CategoryFilter = () => (
-  <div className="w-full bg-blue-100 dark:bg-blue-950 shadow-sm border-b border-blue-200 dark:border-blue-900">
+  <div className="w-full bg-secondary dark:bg-blue-950 shadow-sm border-b border-blue-200 dark:border-blue-900">
     <div className="flex justify-between items-center px-4 py-2">
       {categories.map((cat) => (
         <Link

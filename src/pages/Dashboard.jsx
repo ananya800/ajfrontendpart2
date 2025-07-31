@@ -92,8 +92,8 @@ const Dashboard = () => {
           disabled={addLoading}
           className={`px-6 py-2 rounded-r transition ${
             addLoading
-              ? "bg-blue-400 cursor-not-allowed"
-              : "bg-blue-600 hover:bg-blue-700 text-white"
+              ? "bg-tertiary cursor-not-allowed"
+              : "bg-tertiary hover:bg-blue-700 text-white"
           }`}
         >
           {addLoading ? "Processing..." : "Add"}

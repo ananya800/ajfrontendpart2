@@ -86,16 +86,16 @@ function App() {
       
       {!isAuthRoute && !isAdminRoute && <Footer />}
       
-      {/* Floating Theme Button - only show on user routes */}
-      {!isAdminRoute && (
+      {/* Floating Theme Button - only show on user routes
+       {!isAdminRoute && (
         <button
           onClick={toggleTheme}
           className="fixed bottom-6 right-6 z-50 p-3 rounded-full shadow-lg bg-white dark:bg-gray-800 text-yellow-500 dark:text-blue-400 border-2 border-yellow-300 dark:border-blue-700 hover:scale-110 transition-all duration-200"
           aria-label="Toggle theme"
         >
           {theme === "dark" ? <FiSun className="w-6 h-6" /> : <FiMoon className="w-6 h-6" />}
-        </button>
-      )}
+        </button> 
+      )} */}
     </>
   );
 }

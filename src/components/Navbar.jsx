@@ -42,12 +42,12 @@ const Navbar = () => {
   const { isFree, tokens } = getTokenInfo();
 
   return (
-    <header className="bg-white dark:bg-gray-900 shadow-md">
+    <header className="bg-primary dark:bg-gray-900 shadow-md">
       <nav className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Logo and Title */}
         <div className="flex items-center space-x-3">
           <img src="/images/logo.png" alt="Logo" className="w-10 h-10" />
-          <span className="text-xl font-bold text-blue-600">AJ Tracker</span>
+          <span className="text-xl font-bold text-accent">AJ Tracker</span>
         </div>
         {/* SearchBar center, links right */}
         <div className="flex-1 flex items-center">
@@ -57,15 +57,15 @@ const Navbar = () => {
             </div>
           </div>
           <div className="flex items-center space-x-4 ml-8">
-          <Link to="/" className="hover:text-blue-500 font-medium">
+          <Link to="/" className="hover:text-blue-500 text-accent font-medium">
             Home
           </Link>
           {isLoggedin ? (
             <>
-                <Link to="/dashboard" className="hover:text-blue-500 font-medium">
+                <Link to="/dashboard" className="hover:text-blue-500 text-accent font-medium">
                   Dashboard
                 </Link>
-                <Link to="/premium" className="hover:text-blue-500 font-medium">
+                <Link to="/premium" className="hover:text-blue-500 text-accent font-medium">
                   Premium
                 </Link>
                 {/* Token count for free users */}

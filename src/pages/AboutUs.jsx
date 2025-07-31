@@ -1,4 +1,6 @@
 import { Link } from "react-router-dom";
+import jayji from "../../public/images/jayji.jpg";
+import ananya from "../../public/images/ananya.jpg";
 const AboutUs = () => (
   <div className="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 py-16 px-2">
     <div className="text-center mb-16">
@@ -8,17 +10,91 @@ const AboutUs = () => (
       <p className="text-xl text-gray-700 dark:text-gray-300 max-w-3xl mx-auto leading-relaxed">
         Meet the team behind the smart price tracking solution that's helping thousands of shoppers save money and shop smarter.
       </p>
+      <div className="mt-10 max-w-4xl mx-auto">
+  <div className="bg-white dark:bg-gray-800 shadow-xl rounded-xl p-6">
+    <h3 className="text-2xl font-semibold text-gray-800 dark:text-white mb-4">
+      📊 AJtracker Presentation
+    </h3>
+    <div className="relative w-full pb-[56.25%] h-0 overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700 shadow-lg">
+  <iframe
+    src="https://docs.google.com/presentation/d/e/2PACX-1vTgLdhXxef273slaEBbzjJKDyuwfmQKLMMApcVPf-czXbccSsN7qfBy7IxkaSXqdaIzZIZVlemFy_rw/pubembed?start=false&loop=false&delayms=5000"
+    frameBorder="0"
+    allowFullScreen
+    className="absolute top-0 left-0 w-full h-full"
+    title="AJtracker Slide"
+  ></iframe>
+</div>
+
+  </div>
+</div>
+
+
     </div>
-    <div className="grid md:grid-cols-2 gap-8 mb-16">
+    
+    {/* Team Section */}
+    <div className="bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 dark:from-blue-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl p-8 mb-16 shadow-xl">
+  <h2 className="text-3xl font-semibold text-center mb-8 text-gray-800 dark:text-white">
+    Meet the Team
+  </h2>
+  <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
+    
+    {/* Member 1 */}
+    <div className="text-center bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+      <div className="w-32 h-32 mx-auto mb-4 shadow-lg rounded-full overflow-hidden">
+        <img
+          src="./public/images/jayji.jpg"
+          alt="Team Member 1"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
+        Co-Founder & Developer
+      </h3>
+      <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+        Full-stack developer passionate about creating tools that solve real problems
+      </p>
+      <div className="text-xs text-gray-500 dark:text-gray-400">
+        "Making smart shopping accessible to everyone"
+      </div>
+    </div>
+
+    {/* Member 2 */}
+    <div className="text-center bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
+      <div className="w-32 h-32 mx-auto mb-4 shadow-lg rounded-full overflow-hidden">
+        <img
+          src="./public/images/ananya.jpg" 
+          alt="Team Member 2"
+          className="w-full h-full object-cover"
+        />
+      </div>
+      <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">
+        Co-Founder & Developer
+      </h3>
+      <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
+        Frontend specialist focused on creating seamless user experiences
+      </p>
+      <div className="text-xs text-gray-500 dark:text-gray-400">
+        "Great design meets powerful functionality"
+      </div>
+    </div>
+  </div>
+
+  <p className="text-center mt-8 text-gray-600 dark:text-gray-300 italic">
+    Two friends who turned their frustration with missing great deals into a solution that helps everyone shop smarter
+  </p>
+</div>
+<div className="grid md:grid-cols-2 gap-8 mb-16">
       <div className="space-y-6 bg-gradient-to-br from-blue-200 to-blue-400 dark:from-blue-900 dark:to-blue-700 rounded-2xl shadow-lg p-8">
         <h2 className="text-3xl font-semibold text-gray-800 dark:text-white">
           What is AJtracker?
         </h2>
         <p className="text-gray-700 dark:text-gray-200 leading-relaxed">
-          AJtracker is a smart and lightweight price tracking website that helps users monitor product prices across popular e-commerce platforms. Whether you're waiting for the price to drop on a mobile phone, laptop, or any online product — AJtracker keeps an eye on it and notifies you when it's the best time to buy.
+          AJtracker is your smart shopping buddy — effortlessly tracking prices on mobiles, laptops, and more across top e-commerce sites. Just set it and forget it — we’ll alert you the moment the price drops. No more deal FOMO. Just smart savings. 💸📉
+
+
         </p>
         <p className="text-gray-700 dark:text-gray-200 leading-relaxed">
-          Built for shoppers who want to avoid overpaying, deal hunters looking for the best offers, students buying gadgets on a budget, and anyone who wants to track price drops without checking daily.
+          Built for smart shoppers — whether you're a deal hunter chasing the best offers, a student buying gadgets on a budget, or just tired of checking prices every day. AJtracker watches the prices for you, so you never overpay
         </p>
       </div>
       <div className="space-y-6 bg-gradient-to-br from-pink-200 to-purple-300 dark:from-purple-900 dark:to-pink-900 rounded-2xl shadow-lg p-8">
@@ -33,45 +109,7 @@ const AboutUs = () => (
         </p>
       </div>
     </div>
-    {/* Team Section */}
-    <div className="bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 dark:from-blue-900 dark:via-purple-900 dark:to-pink-900 rounded-2xl p-8 mb-16 shadow-xl">
-      <h2 className="text-3xl font-semibold text-center mb-8 text-gray-800 dark:text-white">
-        Meet the Team
-      </h2>
-      <div className="grid md:grid-cols-2 gap-8 max-w-2xl mx-auto">
-        <div className="text-center bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-          <div className="w-32 h-32 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center">
-              <span className="text-4xl">👨‍💻</span>
-            </div>
-          </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Co-Founder & Developer</h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
-            Full-stack developer passionate about creating tools that solve real problems
-          </p>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            "Making smart shopping accessible to everyone"
-          </div>
-        </div>
-        <div className="text-center bg-white dark:bg-gray-800 rounded-xl shadow-md p-6">
-          <div className="w-32 h-32 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-            <div className="w-28 h-28 bg-white rounded-full flex items-center justify-center">
-              <span className="text-4xl">👨‍💻</span>
-            </div>
-          </div>
-          <h3 className="text-xl font-semibold mb-2 text-gray-800 dark:text-white">Co-Founder & Developer</h3>
-          <p className="text-gray-600 dark:text-gray-300 text-sm mb-3">
-            Frontend specialist focused on creating seamless user experiences
-          </p>
-          <div className="text-xs text-gray-500 dark:text-gray-400">
-            "Great design meets powerful functionality"
-          </div>
-        </div>
-      </div>
-      <p className="text-center mt-8 text-gray-600 dark:text-gray-300 italic">
-        Two friends who turned their frustration with missing great deals into a solution that helps everyone shop smarter
-      </p>
-    </div>
+
     {/* Features Section */}
     <div className="mb-16">
       <h2 className="text-3xl font-semibold text-center mb-8 text-gray-800 dark:text-white">

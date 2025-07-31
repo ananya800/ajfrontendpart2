@@ -5,10 +5,14 @@ module.exports = {
   ],
   theme: {
     extend: {
+       fontFamily: {
+        sans: ['Inter', 'sans-serif'],
+      },
       colors: {
-        primary: '#6366f1', // Indigo 500
-        secondary: '#ec4899', // Pink 500
-        accent: '#fbbf24', // Yellow 400
+        primary: '#DB1F48', // Indigo 500
+        secondary: '#01949A',
+        tertiary:"#004369" ,// Pink 500
+        accent: '#E5DDC8', // Yellow 400
         background: '#f3f4f6', // Gray 100
         darkbg: '#18181b', // Gray 900
         text: '#1e293b', // Slate 800

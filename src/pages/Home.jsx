@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import CategoryFilter from "../components/CategoryFilter";
 import ProductRowByCategory from "../components/ProductRowByCategory";  
 import HeroSection from "../components/HeroSection";
+import Header from "../components/Header";
 
 const categories = ["Mobiles", "Laptops", "Audio","Books","Home","Kitchen","Clothing","Footwear","Camera"];
 
@@ -11,18 +12,20 @@ const Home = () => {
   const [search, setSearch] = useState("");
   
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-100 via-pink-100 to-purple-100 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
-      <Navbar />
+    <div className="min-h-screen bg-white dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      
 
-      <CategoryFilter
-        selected={selectedCategory}
-        onCategoryChange={(cat) => setSelectedCategory(cat === selectedCategory ? null : cat)}
-      />
+      <Header
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}/>
+        
+      
+      
       
       <HeroSection/>
 
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="space-y-12 mt-8">
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className=" mt-8">
           {categories.map((cat) => (
             <div key={cat}>
               <ProductRowByCategory category={cat} search={search} />
