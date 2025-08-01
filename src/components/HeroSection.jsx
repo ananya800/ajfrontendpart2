@@ -1,18 +1,15 @@
 import { useNavigate } from "react-router-dom";
-import heroBanner from "../../public/images/heroBanner.png";
-
+import heroBanner from "../../public/images/heroBanner.png"; // Assuming correct path
 
 const HeroSection = () => {
   return (
-    <div  className="w-full h-[100vh] object-cover object-center">
+    <div className="relative w-full h-screen">
       {/* Banner Image */}
       <img
-        src="./public/images/heroBanner.png" 
+        src={heroBanner}
         alt="AJTracker Banner"
         className="w-full h-full object-cover"
       />
-
-      
     </div>
   );
 };

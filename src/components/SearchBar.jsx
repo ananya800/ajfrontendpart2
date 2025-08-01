@@ -38,7 +38,7 @@ const SearchBar = ({ value, onSearch, placeholder, onSubmit }) => {
           value={searchValue}
           onChange={handleChange}
           placeholder={placeholder || "Search products..."}
-          className="flex-1 pl-3 pr-3 py-2 rounded-l-lg border-2 border-transparent bg-accent dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-lg focus:outline-none focus:ring-0 focus:border-gradient-to-r focus:from-blue-400 focus:to-pink-400 transition-all text-base"
+          className="flex-1 pl-3 pr-3 py-2 rounded-l-lg border-2 border-transparent bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-lg focus:outline-none focus:ring-0 focus:border-gradient-to-r focus:from-blue-400 focus:to-pink-400 transition-all text-base"
           style={{ borderImage: 'linear-gradient(90deg, #3b82f6, #a21caf, #ec4899) 1' }}
         />
         <button

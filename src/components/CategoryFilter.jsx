@@ -16,12 +16,12 @@ const categories = [
 
 const CategoryFilter = () => (
   <div className="w-full bg-secondary dark:bg-blue-950 shadow-sm border-b border-blue-200 dark:border-blue-900">
-    <div className="flex justify-between items-center px-4 py-2">
+    <div className="flex flex-wrap justify-start gap-2 px-4 py-2 overflow-x-auto scrollbar-hide sm:justify-between">
       {categories.map((cat) => (
         <Link
           key={cat.name}
           to={`/category/${cat.name}`}
-          className="flex items-center px-3 py-1 hover:bg-blue-200 dark:hover:bg-blue-900 transition font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap text-sm"
+          className="flex items-center px-3 py-1 hover:bg-blue-200 dark:hover:bg-blue-900 transition font-medium text-gray-700 dark:text-gray-200 whitespace-nowrap text-sm rounded-md"
           style={{ textDecoration: 'none' }}
         >
           <span className="text-base mr-1">{cat.icon}</span> {cat.name}
